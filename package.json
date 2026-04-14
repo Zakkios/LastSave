@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "back": "cd backend && symfony server:start",
+    "front": "cd frontend && npm run dev"
+  }
+}
