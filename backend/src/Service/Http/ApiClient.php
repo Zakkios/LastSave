@@ -18,4 +18,10 @@ class ApiClient
         $response = $this->httpClient->request('GET', $url . $endpoint, $options);
         return $response->toArray();
     }
+
+    public function post(string $url, string $endpoint, array $options = []): array
+    {
+        $response = $this->httpClient->request('POST', $url . $endpoint, $options);
+        return $response->toArray();
+    }
 }
