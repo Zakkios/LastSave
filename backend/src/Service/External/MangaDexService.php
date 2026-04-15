@@ -10,14 +10,11 @@ class MangaDexService
 {
     private const BASE_URL = 'https://api.mangadex.org';
     private const COVER_BASE_URL = 'https://uploads.mangadex.org/covers';
-    private ApiClient $apiClient;
-    private MangaMapper $mangaMapper;
 
-    public function __construct(ApiClient $apiClient, MangaMapper $mangaMapper)
-    {
-        $this->apiClient = $apiClient;
-        $this->mangaMapper = $mangaMapper;
-    }
+    public function __construct(
+        private ApiClient $apiClient,
+        private MangaMapper $mangaMapper
+    ) {}
 
     public function getRandomManga(): MangaDTO
     {
