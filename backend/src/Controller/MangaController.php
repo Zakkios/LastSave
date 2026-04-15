@@ -7,16 +7,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
+#[Route('/manga', name: 'app_manga')]
 class MangaController extends AbstractController
 {
-    private MangaDexService $mangaDexService;
 
-    public function __construct(MangaDexService $mangaDexService)
-    {
-        $this->mangaDexService = $mangaDexService;
-    }
+    public function __construct(
+        private MangaDexService $mangaDexService
+    ) {}
 
-    #[Route('/manga/random', name: 'app_random_manga', methods: ['GET'])]
+    #[Route('/random', name: 'app_manga_random', methods: ['GET'])]
     public function randomManga(): JsonResponse
     {
         $mangaData = $this->mangaDexService->getRandomManga();
