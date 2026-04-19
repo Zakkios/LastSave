@@ -1,7 +1,9 @@
-export interface RegisterPayload {
+export interface AuthCredentials {
   email: string;
   password: string;
 }
+
+export type RegisterPayload = AuthCredentials;
 
 export interface RegisterResponse {
   message: string;
@@ -10,6 +12,10 @@ export interface RegisterResponse {
 export interface RegisterFormValues extends RegisterPayload {
   confirmPassword: string;
 }
+
+export type LoginPayload = AuthCredentials;
+
+export type LoginFormValues = LoginPayload;
 
 export interface AuthApiErrorResponse {
   message?: string;

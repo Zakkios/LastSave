@@ -1,10 +1,16 @@
-import { useState, type ChangeEvent, type SubmitEvent } from "react";
+import type { SubmitEvent } from "react";
 import { registerUser } from "./api";
+import AuthFormFeedback from "./AuthFormFeedback";
+import AuthSubmitButton from "./AuthSubmitButton";
 import AuthTextField from "./AuthTextField";
 import type { RegisterFormValues } from "./types";
+import {
+  useAuthFormState,
+  type AuthFormErrors,
+} from "./useAuthFormState";
+import { isValidEmail } from "./validation";
 
-type RegisterFormErrors = Partial<Record<keyof RegisterFormValues, string>>;
-type SubmitStatus = "idle" | "success" | "error";
+type RegisterFormErrors = AuthFormErrors<RegisterFormValues>;
 
 const initialValues: RegisterFormValues = {
   email: "",
@@ -20,7 +26,7 @@ const validateRegisterForm = (
 
   if (!email) {
     errors.email = "Renseignez votre adresse email.";
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  } else if (!isValidEmail(email)) {
     errors.email = "Adresse email invalide.";
   }
 
@@ -44,29 +50,19 @@ const getSuccessMessage = (message: string) => {
 };
 
 const RegisterForm = () => {
-  const [values, setValues] = useState<RegisterFormValues>(initialValues);
-  const [errors, setErrors] = useState<RegisterFormErrors>({});
-  const [status, setStatus] = useState<SubmitStatus>("idle");
-  const [feedback, setFeedback] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const fieldName = event.target.name as keyof RegisterFormValues;
-
-    setValues((currentValues) => ({
-      ...currentValues,
-      [fieldName]: event.target.value,
-    }));
-    setErrors((currentErrors) => ({
-      ...currentErrors,
-      [fieldName]: undefined,
-    }));
-
-    if (feedback) {
-      setFeedback(null);
-      setStatus("idle");
-    }
-  };
+  const {
+    values,
+    errors,
+    status,
+    feedback,
+    isSubmitting,
+    setErrors,
+    setStatus,
+    setFeedback,
+    setIsSubmitting,
+    handleChange,
+    resetForm,
+  } = useAuthFormState(initialValues);
 
   const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -90,8 +86,7 @@ const RegisterForm = () => {
         password: values.password,
       });
 
-      setValues(initialValues);
-      setErrors({});
+      resetForm();
       setStatus("success");
       setFeedback(getSuccessMessage(response.message));
     } catch (error) {
@@ -145,25 +140,18 @@ const RegisterForm = () => {
       />
 
       {feedback ? (
-        <p
-          className={`rounded-md border px-3 py-2 text-sm ${
-            status === "success"
-              ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-200"
-              : "border-red-400/30 bg-red-400/10 text-red-200"
-          }`}
-          role={status === "success" ? "status" : "alert"}
-        >
-          {feedback}
-        </p>
+        <AuthFormFeedback
+          message={feedback}
+          status={status === "success" ? "success" : "error"}
+        />
       ) : null}
 
-      <button
-        className="h-11 w-full rounded-md bg-emerald-400 px-4 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-200 focus:ring-offset-2 focus:ring-offset-zinc-900 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-400"
-        disabled={isSubmitting}
-        type="submit"
+      <AuthSubmitButton
+        isSubmitting={isSubmitting}
+        submittingLabel="Création..."
       >
-        {isSubmitting ? "Création..." : "Créer mon compte"}
-      </button>
+        Créer mon compte
+      </AuthSubmitButton>
     </form>
   );
 };
