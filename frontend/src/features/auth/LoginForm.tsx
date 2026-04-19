@@ -1,10 +1,11 @@
 import type { SubmitEvent } from "react";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { loginUser } from "./api";
 import AuthFormFeedback from "./AuthFormFeedback";
 import AuthSubmitButton from "./AuthSubmitButton";
 import AuthTextField from "./AuthTextField";
 import type { LoginFormValues } from "./types";
+import { useAuth } from "./useAuth";
 import { useAuthFormState, type AuthFormErrors } from "./useAuthFormState";
 import { isValidEmail } from "./validation";
 
@@ -13,6 +14,29 @@ type LoginFormErrors = AuthFormErrors<LoginFormValues>;
 const initialValues: LoginFormValues = {
   email: "",
   password: "",
+};
+
+const getRedirectPath = (state: unknown) => {
+  if (!state || typeof state !== "object" || !("from" in state)) {
+    return "/";
+  }
+
+  const from = (state as {
+    from?: {
+      hash?: unknown;
+      pathname?: unknown;
+      search?: unknown;
+    };
+  }).from;
+
+  if (!from || typeof from.pathname !== "string") {
+    return "/";
+  }
+
+  const search = typeof from.search === "string" ? from.search : "";
+  const hash = typeof from.hash === "string" ? from.hash : "";
+
+  return `${from.pathname}${search}${hash}`;
 };
 
 const validateLoginForm = (values: LoginFormValues): LoginFormErrors => {
@@ -34,6 +58,8 @@ const validateLoginForm = (values: LoginFormValues): LoginFormErrors => {
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { refreshUser } = useAuth();
   const {
     values,
     errors,
@@ -70,10 +96,16 @@ const LoginForm = () => {
         password: values.password,
       });
 
+      const currentUser = await refreshUser();
+
+      if (!currentUser) {
+        throw new Error("Connexion réussie, mais la session est introuvable.");
+      }
+
       resetForm();
       setStatus("success");
       setFeedback("Connexion réussie.");
-      navigate("/", { replace: true });
+      navigate(getRedirectPath(location.state), { replace: true });
     } catch (error) {
       setStatus("error");
       setFeedback(

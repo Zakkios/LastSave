@@ -17,6 +17,10 @@ export type LoginPayload = AuthCredentials;
 
 export type LoginFormValues = LoginPayload;
 
+export interface AuthUser {
+  username: string;
+}
+
 export interface AuthApiErrorResponse {
   message?: string;
 }

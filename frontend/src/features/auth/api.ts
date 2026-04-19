@@ -2,6 +2,7 @@ import axios from "axios";
 import http from "../../services/http";
 import type {
   AuthApiErrorResponse,
+  AuthUser,
   LoginPayload,
   RegisterPayload,
   RegisterResponse,
@@ -34,6 +35,17 @@ const getAuthErrorMessage = (
   }
 
   return messages[message] ?? message;
+};
+
+const isUnauthorizedError = (error: unknown) => {
+  return axios.isAxiosError(error) && error.response?.status === 401;
+};
+
+const isRefreshRejectedError = (error: unknown) => {
+  return (
+    axios.isAxiosError(error) &&
+    (error.response?.status === 400 || error.response?.status === 401)
+  );
 };
 
 export const registerUser = async (
@@ -71,6 +83,50 @@ export const loginUser = async (
           "Impossible de se connecter pour le moment."
         )
       );
+    }
+
+    throw error;
+  }
+};
+
+const fetchCurrentUser = async () => {
+  const response = await http.get<AuthUser>("/me");
+  return response.data;
+};
+
+const refreshSession = async () => {
+  try {
+    await http.post("/token/refresh");
+    return true;
+  } catch (error) {
+    if (isRefreshRejectedError(error)) {
+      return false;
+    }
+
+    throw error;
+  }
+};
+
+export const getCurrentUser = async (): Promise<AuthUser | null> => {
+  try {
+    return await fetchCurrentUser();
+  } catch (error) {
+    if (!isUnauthorizedError(error)) {
+      throw error;
+    }
+  }
+
+  const hasRefreshedSession = await refreshSession();
+
+  if (!hasRefreshedSession) {
+    return null;
+  }
+
+  try {
+    return await fetchCurrentUser();
+  } catch (error) {
+    if (isUnauthorizedError(error)) {
+      return null;
     }
 
     throw error;
