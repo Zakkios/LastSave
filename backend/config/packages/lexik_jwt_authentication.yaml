@@ -12,8 +12,8 @@ lexik_jwt_authentication:
     set_cookies:
         BEARER:
             lifetime: null
-            samesite: lax
+            samesite: none
             path: /
             domain: null
-            secure: false
+            secure: true
             httpOnly: true
