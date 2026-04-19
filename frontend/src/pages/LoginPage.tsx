@@ -1,8 +1,13 @@
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import AuthPageLayout from "../features/auth/AuthPageLayout";
+import AuthFormFeedback from "../features/auth/AuthFormFeedback";
 import LoginForm from "../features/auth/LoginForm";
+import { getAuthFlashFromState } from "../features/auth/authFlash";
 
 const LoginPage = () => {
+  const location = useLocation();
+  const flash = getAuthFlashFromState(location.state);
+
   return (
     <AuthPageLayout
       eyebrow="Connexion"
@@ -24,7 +29,15 @@ const LoginPage = () => {
         </>
       }
     >
-      <LoginForm />
+      <>
+        {flash ? (
+          <div className="mb-5">
+            <AuthFormFeedback message={flash.message} status={flash.status} />
+          </div>
+        ) : null}
+
+        <LoginForm />
+      </>
     </AuthPageLayout>
   );
 };

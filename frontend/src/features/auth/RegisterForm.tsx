@@ -1,8 +1,10 @@
 import type { SubmitEvent } from "react";
+import { useNavigate } from "react-router";
 import { registerUser } from "./api";
 import AuthFormFeedback from "./AuthFormFeedback";
 import AuthSubmitButton from "./AuthSubmitButton";
 import AuthTextField from "./AuthTextField";
+import { getRegistrationSuccessFlash } from "./authFlash";
 import type { RegisterFormValues } from "./types";
 import {
   useAuthFormState,
@@ -45,11 +47,8 @@ const validateRegisterForm = (
   return errors;
 };
 
-const getSuccessMessage = (message: string) => {
-  return message === "User created" ? "Votre compte a été créé." : message;
-};
-
 const RegisterForm = () => {
+  const navigate = useNavigate();
   const {
     values,
     errors,
@@ -81,14 +80,18 @@ const RegisterForm = () => {
     setFeedback(null);
 
     try {
-      const response = await registerUser({
+      await registerUser({
         email: values.email.trim(),
         password: values.password,
       });
 
       resetForm();
-      setStatus("success");
-      setFeedback(getSuccessMessage(response.message));
+      navigate("/login", {
+        replace: true,
+        state: {
+          flash: getRegistrationSuccessFlash(),
+        },
+      });
     } catch (error) {
       setStatus("error");
       setFeedback(
@@ -96,7 +99,6 @@ const RegisterForm = () => {
           ? error.message
           : "Impossible de créer le compte pour le moment.",
       );
-    } finally {
       setIsSubmitting(false);
     }
   };
