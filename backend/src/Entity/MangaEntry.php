@@ -2,12 +2,20 @@
 
 namespace App\Entity;
 
+use App\Enum\MangaStatus;
 use App\Repository\MangaEntryRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MangaEntryRepository::class)]
+#[ORM\UniqueConstraint(name: 'uniq_owner_provider_manga', columns: ['owner_id', 'provider_id'])]
 class MangaEntry
 {
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -16,8 +24,8 @@ class MangaEntry
     #[ORM\Column(length: 255)]
     private ?string $providerId = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $status = null;
+    #[ORM\Column(enumType: MangaStatus::class)]
+    private ?MangaStatus $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'mangaEntries')]
     #[ORM\JoinColumn(nullable: false)]
@@ -46,12 +54,12 @@ class MangaEntry
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): ?MangaStatus
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): static
+    public function setStatus(MangaStatus $status): static
     {
         $this->status = $status;
 

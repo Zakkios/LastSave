@@ -2,12 +2,20 @@
 
 namespace App\Entity;
 
+use App\Enum\GameStatus;
 use App\Repository\GameEntryRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: GameEntryRepository::class)]
+#[ORM\UniqueConstraint(name: 'uniq_owner_provider_game', columns: ['provider_id', 'owner_id'])]
 class GameEntry
 {
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -16,8 +24,8 @@ class GameEntry
     #[ORM\Column(length: 255)]
     private ?string $providerId = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $status = null;
+    #[ORM\Column(enumType: GameStatus::class)]
+    private ?GameStatus $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'gameEntries')]
     #[ORM\JoinColumn(nullable: false)]
@@ -46,12 +54,12 @@ class GameEntry
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): ?GameStatus
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): static
+    public function setStatus(GameStatus $status): static
     {
         $this->status = $status;
 
