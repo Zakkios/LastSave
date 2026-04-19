@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -31,6 +33,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
+
+    /**
+     * @var Collection<int, MangaEntry>
+     */
+    #[ORM\OneToMany(targetEntity: MangaEntry::class, mappedBy: 'owner')]
+    private Collection $mangaEntries;
+
+    /**
+     * @var Collection<int, GameEntry>
+     */
+    #[ORM\OneToMany(targetEntity: GameEntry::class, mappedBy: 'owner')]
+    private Collection $gameEntries;
+
+    public function __construct()
+    {
+        $this->mangaEntries = new ArrayCollection();
+        $this->gameEntries = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -111,5 +131,65 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void
     {
         // @deprecated, to be removed when upgrading to Symfony 8
+    }
+
+    /**
+     * @return Collection<int, MangaEntry>
+     */
+    public function getMangaEntries(): Collection
+    {
+        return $this->mangaEntries;
+    }
+
+    public function addMangaEntry(MangaEntry $mangaEntry): static
+    {
+        if (!$this->mangaEntries->contains($mangaEntry)) {
+            $this->mangaEntries->add($mangaEntry);
+            $mangaEntry->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMangaEntry(MangaEntry $mangaEntry): static
+    {
+        if ($this->mangaEntries->removeElement($mangaEntry)) {
+            // set the owning side to null (unless already changed)
+            if ($mangaEntry->getOwner() === $this) {
+                $mangaEntry->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GameEntry>
+     */
+    public function getGameEntries(): Collection
+    {
+        return $this->gameEntries;
+    }
+
+    public function addGameEntry(GameEntry $gameEntry): static
+    {
+        if (!$this->gameEntries->contains($gameEntry)) {
+            $this->gameEntries->add($gameEntry);
+            $gameEntry->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGameEntry(GameEntry $gameEntry): static
+    {
+        if ($this->gameEntries->removeElement($gameEntry)) {
+            // set the owning side to null (unless already changed)
+            if ($gameEntry->getOwner() === $this) {
+                $gameEntry->setOwner(null);
+            }
+        }
+
+        return $this;
     }
 }
