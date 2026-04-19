@@ -41,13 +41,6 @@ const isUnauthorizedError = (error: unknown) => {
   return axios.isAxiosError(error) && error.response?.status === 401;
 };
 
-const isRefreshRejectedError = (error: unknown) => {
-  return (
-    axios.isAxiosError(error) &&
-    (error.response?.status === 400 || error.response?.status === 401)
-  );
-};
-
 export const registerUser = async (
   payload: RegisterPayload
 ): Promise<RegisterResponse> => {
@@ -94,34 +87,7 @@ const fetchCurrentUser = async () => {
   return response.data;
 };
 
-const refreshSession = async () => {
-  try {
-    await http.post("/token/refresh");
-    return true;
-  } catch (error) {
-    if (isRefreshRejectedError(error)) {
-      return false;
-    }
-
-    throw error;
-  }
-};
-
 export const getCurrentUser = async (): Promise<AuthUser | null> => {
-  try {
-    return await fetchCurrentUser();
-  } catch (error) {
-    if (!isUnauthorizedError(error)) {
-      throw error;
-    }
-  }
-
-  const hasRefreshedSession = await refreshSession();
-
-  if (!hasRefreshedSession) {
-    return null;
-  }
-
   try {
     return await fetchCurrentUser();
   } catch (error) {

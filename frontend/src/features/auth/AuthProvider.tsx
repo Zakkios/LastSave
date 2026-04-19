@@ -6,6 +6,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { subscribeToAuthFailure } from "../../services/http";
 import {
   AuthContext,
   type AuthContextValue,
@@ -59,10 +60,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, []);
 
   const clearUser = useCallback(() => {
+    sessionRequestId.current += 1;
     setUser(null);
     setStatus("unauthenticated");
     setError(null);
   }, []);
+
+  useEffect(() => {
+    return subscribeToAuthFailure(clearUser);
+  }, [clearUser]);
 
   useEffect(() => {
     const requestId = sessionRequestId.current + 1;
