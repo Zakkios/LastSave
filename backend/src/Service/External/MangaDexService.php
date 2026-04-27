@@ -55,6 +55,29 @@ class MangaDexService
         return $mangaDTO;
     }
 
+    public function getMangaById(string $id): MangaDTO
+    {
+        $mangaData = $this->apiClient->get(self::BASE_URL, "/manga/{$id}");
+        $mangaRelationships = $mangaData['data']['relationships'];
+
+        $mangaId = $mangaData['data']['id'] ?? null;
+        $coverId = array_values(array_filter(
+            $mangaRelationships,
+            fn($relation) => $relation['type'] === 'cover_art'
+        ))[0]['id'] ?? null;
+        $coverUrl = $this->getCoverUrl($coverId, $mangaId);
+
+        $authorId = array_values(array_filter(
+            $mangaRelationships,
+            fn($relation) => $relation['type'] === 'author'
+        ))[0]['id'] ?? null;
+        $author = $this->getAuthorName($authorId);
+
+        $mangaDTO = $this->mangaMapper->fromEntity($mangaData, $author, $coverUrl);
+
+        return $mangaDTO;
+    }
+
     public function getAuthorName(string $authorId): string
     {
         try {

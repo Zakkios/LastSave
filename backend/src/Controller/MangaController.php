@@ -33,4 +33,12 @@ class MangaController extends AbstractController
 
         return $this->json($mangaData);
     }
+
+    #[Route('/{id}', name: 'app_manga_by_id', methods: ['GET'])]
+    public function mangaById(string $id): JsonResponse
+    {
+        $mangaData = $this->mangaDexService->getMangaById($id);
+
+        return $this->json($mangaData);
+    }
 }
