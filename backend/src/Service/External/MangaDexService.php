@@ -16,6 +16,22 @@ class MangaDexService
         private MangaMapper $mangaMapper
     ) {}
 
+    public function getMangaForAutocomplete(string $query): array
+    {
+        $mangaDTOs = [];
+        $params = [
+            'title' => $query,
+            'limit' => 5,
+            'order[relevance]' => 'desc',
+            'includes[]' => 'cover_art',
+        ];
+        $mangaData = $this->apiClient->get(self::BASE_URL, '/manga', $params);
+
+        $mangaDTOs = $this->mangaMapper->fromCollection($mangaData);
+
+        return $mangaDTOs;
+    }
+
     public function getRandomManga(): MangaDTO
     {
         $mangaData = $this->apiClient->get(self::BASE_URL, '/manga/random');
