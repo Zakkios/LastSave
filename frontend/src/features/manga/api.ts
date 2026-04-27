@@ -23,4 +23,14 @@ const getAutocompleteManga = async (
   }
 };
 
-export { getRandomManga, getAutocompleteManga };
+const getMangaById = async (id: string): Promise<MangaResponse> => {
+  try {
+    const response = await http.get(`/manga/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error calling manga API:", error);
+    throw error;
+  }
+};
+
+export { getRandomManga, getAutocompleteManga, getMangaById };
