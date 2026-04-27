@@ -3,8 +3,10 @@ import { getAutocompleteManga, getRandomManga } from "../features/manga/api";
 import type { MangaResponse } from "../features/manga/types";
 import GameApi from "../features/game/api";
 import type { GameResponse } from "../features/game/types";
+import { useNavigate } from "react-router";
 
 const HomePage = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [manga, setManga] = useState<MangaResponse | null>(null);
   const [autocompleteResults, setAutocompleteResults] = useState<
@@ -64,6 +66,10 @@ const HomePage = () => {
     }, 500);
   };
 
+  const searchRedirect = (id: string) => {
+    return () => navigate(`/manga/${id}`);
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <h1 className="text-4xl font-bold mb-4">Test API</h1>
@@ -84,6 +90,7 @@ const HomePage = () => {
               <li
                 key={manga.id}
                 className="px-4 py-2 hover:bg-zinc-800 cursor-pointer rounded-lg"
+                onClick={searchRedirect(manga.id)}
               >
                 {manga.title}
               </li>
