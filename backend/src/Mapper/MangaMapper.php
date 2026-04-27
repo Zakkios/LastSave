@@ -33,15 +33,30 @@ class MangaMapper
 
     private function resolveTitle(array $attributes): string
     {
+        $mainTitle = $attributes['title'] ?? [];
         $altTitles = $attributes['altTitles'] ?? [];
 
-        $frenchTitle = array_values(array_filter(
-            $altTitles,
-            fn($title) => isset($title['fr'])
-        ))[0]['fr'] ?? null;
+        $frenchTitle = $this->findAltTitleByLanguage($altTitles, 'fr');
+        $englishTitle = $mainTitle['en'] ?? null;
+        $englishAltTitle = $this->findAltTitleByLanguage($altTitles, 'en');
 
-        return $frenchTitle
-            ?? $attributes['title']['en']
-            ?? 'Titre introuvable';
+        $title = $frenchTitle
+            ?? $englishTitle
+            ?? $englishAltTitle
+            ?? reset($mainTitle)
+            ?: 'Titre introuvable';
+
+        return $title;
+    }
+
+    private function findAltTitleByLanguage(array $altTitles, string $language): ?string
+    {
+        foreach ($altTitles as $title) {
+            if (isset($title[$language]) && is_string($title[$language])) {
+                return $title[$language];
+            }
+        }
+
+        return null;
     }
 }
