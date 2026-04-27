@@ -1,3 +1,4 @@
+import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router";
 import { AuthProvider } from "./features/auth/AuthProvider";
 import GuestRoute from "./features/auth/GuestRoute";
@@ -5,7 +6,7 @@ import ProtectedRoute from "./features/auth/ProtectedRoute";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import "./App.css";
+import MangaDetailPage from "./pages/MangaDetailPage";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Routes>
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<HomePage />} />
+            <Route path="/manga/:id" element={<MangaDetailPage />} />
           </Route>
           <Route element={<GuestRoute />}>
             <Route path="/login" element={<LoginPage />} />
