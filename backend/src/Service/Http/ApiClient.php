@@ -13,20 +13,17 @@ class ApiClient
         $this->httpClient = $httpClient;
     }
 
-    public function get(string $url, string $endpoint, array $params = []): array
+    public function get(string $url, string $endpoint, array $options = []): array
     {
-        $response = $this->httpClient->request('GET', $url . $endpoint, [
-            'query' => $params,
-        ]);
+        $response = $this->httpClient->request('GET', $url . $endpoint, $options);
 
         return $response->toArray();
     }
 
-    public function post(string $url, string $endpoint, array $params = []): array
+    public function post(string $url, string $endpoint, array $options = []): array
     {
-        $response = $this->httpClient->request('POST', $url . $endpoint, [
-            'query' => $params,
-        ]);
+        $response = $this->httpClient->request('POST', $url . $endpoint, $options);
+
         return $response->toArray();
     }
 }

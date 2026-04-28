@@ -20,10 +20,12 @@ class MangaDexService
     {
         $mangaDTOs = [];
         $params = [
-            'title' => $query,
-            'limit' => 5,
-            'order[relevance]' => 'desc',
-            'includes[]' => 'cover_art',
+            'query' => [
+                'title' => $query,
+                'limit' => 5,
+                'order[relevance]' => 'desc',
+                'includes[]' => 'cover_art',
+            ],
         ];
         $mangaData = $this->apiClient->get(self::BASE_URL, '/manga', $params);
 
