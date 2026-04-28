@@ -1,7 +1,7 @@
 import http from "../../services/http";
 import type { GameResponse } from "./types";
 
-const GameApi = async (): Promise<GameResponse> => {
+const getRandomGame = async (): Promise<GameResponse> => {
   try {
     const response = await http.get("/game/random");
     return response.data;
@@ -11,4 +11,4 @@ const GameApi = async (): Promise<GameResponse> => {
   }
 };
 
-export default GameApi;
+export default getRandomGame;

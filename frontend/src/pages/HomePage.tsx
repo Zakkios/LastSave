@@ -1,7 +1,7 @@
 import { useRef, useState, type ChangeEvent } from "react";
 import { getAutocompleteManga, getRandomManga } from "../features/manga/api";
 import type { MangaResponse } from "../features/manga/types";
-import GameApi from "../features/game/api";
+import getRandomGame from "../features/game/api";
 import type { GameResponse } from "../features/game/types";
 import { useNavigate } from "react-router";
 
@@ -43,7 +43,7 @@ const HomePage = () => {
     setActiveType("game");
     setLoading(true);
     try {
-      const response = await GameApi();
+      const response = await getRandomGame();
       setGame(response);
       setLoading(false);
     } catch (error) {
@@ -52,7 +52,7 @@ const HomePage = () => {
     }
   };
 
-  const handleReserch = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
 
     if (value.length < 2) return;
@@ -79,7 +79,7 @@ const HomePage = () => {
           name="search"
           id="search"
           placeholder="Rechercher"
-          onChange={handleReserch}
+          onChange={handleSearch}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg"
           onFocus={() => setIsSearchResultOpen(true)}
           onBlur={() => setTimeout(() => setIsSearchResultOpen(false), 150)}
