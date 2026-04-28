@@ -1,8 +1,8 @@
 import { Link, useLocation } from "react-router";
-import AuthPageLayout from "../features/auth/AuthPageLayout";
+import AuthPageLayout from "../features/auth/components/AuthPageLayout";
 import AuthFormFeedback from "../features/auth/AuthFormFeedback";
-import LoginForm from "../features/auth/LoginForm";
-import { getAuthFlashFromState } from "../features/auth/authFlash";
+import LoginForm from "../features/auth/components/LoginForm";
+import { getAuthFlashFromState } from "../features/auth/api/authFlash";
 
 const LoginPage = () => {
   const location = useLocation();

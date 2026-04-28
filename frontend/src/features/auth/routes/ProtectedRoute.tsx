@@ -1,6 +1,6 @@
 import { Link, Navigate, Outlet, useLocation } from "react-router";
-import AuthRouteStatus from "./AuthRouteStatus";
-import { useAuth } from "./useAuth";
+import { useAuth } from "../hooks/useAuth";
+import AuthRouteStatus from "../AuthRouteStatus";
 
 const ProtectedRoute = () => {
   const location = useLocation();

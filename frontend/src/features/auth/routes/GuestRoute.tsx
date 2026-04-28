@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router";
-import AuthRouteStatus from "./AuthRouteStatus";
-import { useAuth } from "./useAuth";
+import { useAuth } from "../hooks/useAuth";
+import AuthRouteStatus from "../AuthRouteStatus";
 
 const GuestRoute = () => {
   const { isAuthenticated, status } = useAuth();

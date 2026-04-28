@@ -1,16 +1,16 @@
 import type { SubmitEvent } from "react";
 import { useNavigate } from "react-router";
-import { registerUser } from "./api";
-import AuthFormFeedback from "./AuthFormFeedback";
-import AuthSubmitButton from "./AuthSubmitButton";
-import AuthTextField from "./AuthTextField";
-import { getRegistrationSuccessFlash } from "./authFlash";
-import type { RegisterFormValues } from "./types";
+import { registerUser } from "../api";
+import AuthFormFeedback from "../AuthFormFeedback";
+import AuthSubmitButton from "../AuthSubmitButton";
+import AuthTextField from "../AuthTextField";
+import type { RegisterFormValues } from "../types";
 import {
   useAuthFormState,
   type AuthFormErrors,
-} from "./useAuthFormState";
-import { isValidEmail } from "./validation";
+} from "../hooks/useAuthFormState";
+import { isValidEmail } from "../validation";
+import { getRegistrationSuccessFlash } from "../api/authFlash";
 
 type RegisterFormErrors = AuthFormErrors<RegisterFormValues>;
 

@@ -6,14 +6,14 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { subscribeToAuthFailure } from "../../services/http";
+import { subscribeToAuthFailure } from "../../../services/http";
 import {
   AuthContext,
   type AuthContextValue,
   type AuthStatus,
 } from "./AuthContext";
-import { getCurrentUser } from "./api";
-import type { AuthUser } from "./types";
+import { getCurrentUser } from "../api";
+import type { AuthUser } from "../types";
 
 interface AuthProviderProps {
   children: ReactNode;

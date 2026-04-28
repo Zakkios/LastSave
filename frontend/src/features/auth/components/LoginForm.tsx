@@ -1,13 +1,13 @@
 import type { SubmitEvent } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { loginUser } from "./api";
-import AuthFormFeedback from "./AuthFormFeedback";
-import AuthSubmitButton from "./AuthSubmitButton";
-import AuthTextField from "./AuthTextField";
-import type { LoginFormValues } from "./types";
-import { useAuth } from "./useAuth";
-import { useAuthFormState, type AuthFormErrors } from "./useAuthFormState";
-import { isValidEmail } from "./validation";
+import { loginUser } from "../api";
+import AuthFormFeedback from "../AuthFormFeedback";
+import AuthSubmitButton from "../AuthSubmitButton";
+import AuthTextField from "../AuthTextField";
+import type { LoginFormValues } from "../types";
+import { useAuth } from "../hooks/useAuth";
+import { useAuthFormState, type AuthFormErrors } from "../hooks/useAuthFormState";
+import { isValidEmail } from "../validation";
 
 type LoginFormErrors = AuthFormErrors<LoginFormValues>;
 
