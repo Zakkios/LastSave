@@ -1,165 +1,87 @@
-import { useRef, useState, type ChangeEvent } from "react";
-import { getAutocompleteManga, getRandomManga } from "../features/manga/api";
-import type { MangaResponse } from "../features/manga/types";
-import getRandomGame from "../features/game/api";
-import type { GameResponse } from "../features/game/types";
-import { useNavigate } from "react-router";
+import { useState } from "react";
+import { useManga } from "../features/manga/hooks/useManga";
+import { useGame } from "../features/game/hooks/useGame";
+import { MangaCard } from "../features/manga/components/MangaCard";
+import { MangaSearch } from "../features/manga/components/MangaSearch";
+import { GameCard } from "../features/game/components/GameCard";
 
 const HomePage = () => {
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-  const [manga, setManga] = useState<MangaResponse | null>(null);
-  const [autocompleteResults, setAutocompleteResults] = useState<
-    MangaResponse[]
-  >([]);
-  const [isSearchResultOpen, setIsSearchResultOpen] = useState(false);
-  const [game, setGame] = useState<GameResponse | null>(null);
   const [activeType, setActiveType] = useState<"manga" | "game" | null>(null);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  
+  const { 
+    manga, 
+    loading: loadingManga, 
+    fetchRandomManga 
+  } = useManga();
+  
+  const { 
+    game, 
+    loading: loadingGame, 
+    fetchRandomGame 
+  } = useGame();
 
-  const fetchRandomManga = async () => {
+  const handleFetchManga = () => {
     setActiveType("manga");
-    setLoading(true);
-    try {
-      const response = await getRandomManga();
-      setManga(response);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching manga data:", error);
-      setLoading(false);
-    }
+    void fetchRandomManga();
   };
 
-  const fetchAutocompleteManga = async (query: string) => {
-    try {
-      const response = await getAutocompleteManga(query);
-      setAutocompleteResults(response);
-    } catch (error) {
-      console.error("Error fetching manga data:", error);
-    }
-  };
-
-  const fetchRandomGame = async () => {
+  const handleFetchGame = () => {
     setActiveType("game");
-    setLoading(true);
-    try {
-      const response = await getRandomGame();
-      setGame(response);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching game data:", error);
-      setLoading(false);
-    }
-  };
-
-  const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-
-    if (value.length < 2) return;
-
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-
-    timeoutRef.current = setTimeout(() => {
-      fetchAutocompleteManga(value);
-    }, 500);
-  };
-
-  const searchRedirect = (id: string) => {
-    return () => navigate(`/manga/${id}`);
+    void fetchRandomGame();
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <h1 className="text-4xl font-bold mb-4">Test API</h1>
-      <div className="relative w-64 mb-4">
-        <input
-          type="text"
-          name="search"
-          id="search"
-          placeholder="Rechercher"
-          onChange={handleSearch}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-          onFocus={() => setIsSearchResultOpen(true)}
-          onBlur={() => setTimeout(() => setIsSearchResultOpen(false), 150)}
-        />
-        {isSearchResultOpen && autocompleteResults.length > 0 && (
-          <ul className="absolute left-0 right-0 mt-1 bg-zinc-950 border border-gray-300 rounded-lg shadow-lg z-10">
-            {autocompleteResults.map((manga) => (
-              <li
-                key={manga.id}
-                className="px-4 py-2 hover:bg-zinc-800 cursor-pointer rounded-lg"
-                onClick={searchRedirect(manga.id)}
-              >
-                {manga.title}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-      <div className="flex">
+    <div className="flex flex-col items-center justify-center min-h-screen py-10 px-4">
+      <h1 className="text-4xl font-extrabold mb-8 bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
+        LastSave Explorer
+      </h1>
+
+      <MangaSearch />
+
+      <div className="flex gap-4 mb-10">
         <button
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition mr-2"
-          onClick={fetchRandomManga}
+          className="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-semibold transition-all shadow-lg shadow-blue-900/20 active:scale-95"
+          onClick={handleFetchManga}
         >
           Tirer un manga
         </button>
         <button
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition mr-2"
-          onClick={fetchRandomGame}
+          className="px-6 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-semibold transition-all shadow-lg shadow-emerald-900/20 active:scale-95"
+          onClick={handleFetchGame}
         >
           Tirer un jeu
         </button>
       </div>
-      {activeType === "manga" && (
-        <div className="text-center">
-          <p className="text-lg">Manga tiré au sort :</p>
-          {loading ? (
-            <p>Loading...</p>
-          ) : (
-            <>
-              <p className="mb-4">
-                Id : <strong>{manga?.id}</strong>
-              </p>
-              <p className="mb-4">
-                Titre : <strong>{manga?.title}</strong>
-              </p>
-              <p className="mb-4">
-                Auteur : <strong>{manga?.author}</strong>
-              </p>
-              <img className="m-auto" src={manga?.coverUrl} alt="Cover" />
-            </>
-          )}
-        </div>
-      )}
 
-      {activeType === "game" && (
-        <div className="text-center">
-          <p className="text-lg">Jeu tiré au sort :</p>
-          {loading ? (
-            <p>Loading...</p>
-          ) : (
-            <>
-              <p className="mb-4">
-                Nom : <strong>{game?.name}</strong>
-              </p>
-              <p className="mb-4">
-                Résumé : <strong>{game?.summary}</strong>
-              </p>
-              <p className="mb-4">
-                Note : <strong>{game?.rating}</strong>
-              </p>
-              <p className="mb-4">
-                Couverture ID : <strong>{game?.cover?.image_id}</strong>
-              </p>
-              <p className="mb-4">
-                Plateformes ID : {game?.platforms?.join(", ")}
-              </p>
-            </>
-          )}
-        </div>
-      )}
+      <div className="w-full max-w-lg">
+        {activeType === "manga" && (
+          <div className="space-y-4">
+            <h2 className="text-center text-zinc-500 uppercase tracking-widest text-sm font-bold">Manga tiré au sort</h2>
+            {loadingManga ? (
+              <div className="animate-pulse flex flex-col items-center space-y-4">
+                <div className="h-8 w-48 bg-zinc-800 rounded"></div>
+                <div className="h-64 w-full bg-zinc-800 rounded"></div>
+              </div>
+            ) : manga && (
+              <MangaCard manga={manga} />
+            )}
+          </div>
+        )}
+
+        {activeType === "game" && (
+          <div className="space-y-4">
+            <h2 className="text-center text-zinc-500 uppercase tracking-widest text-sm font-bold">Jeu tiré au sort</h2>
+            {loadingGame ? (
+              <div className="animate-pulse flex flex-col items-center space-y-4">
+                <div className="h-8 w-48 bg-zinc-800 rounded"></div>
+                <div className="h-48 w-full bg-zinc-800 rounded"></div>
+              </div>
+            ) : game && (
+              <GameCard game={game} />
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
