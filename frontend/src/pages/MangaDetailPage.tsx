@@ -1,51 +1,51 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router";
-import { getMangaById } from "../features/manga/api";
-import type { MangaResponse } from "../features/manga/types";
+import { useEffect } from "react";
+import { useParams, Link } from "react-router";
+import { useManga } from "../features/manga/hooks/useManga";
+import { MangaCard } from "../features/manga/components/MangaCard";
 
 const MangaDetailPage = () => {
   const { id } = useParams<{ id: string }>();
-
-  const [manga, setManga] = useState<MangaResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { manga, loading, error, fetchMangaById } = useManga();
 
   useEffect(() => {
-    if (!id) {
-      setError("Manga introuvable");
-      setLoading(false);
-      return;
+    if (id) {
+      void fetchMangaById(id);
     }
-
-    const fetchMangaById = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const response = await getMangaById(id);
-        setManga(response);
-      } catch (error) {
-        console.error("Error fetching manga data:", error);
-        setError("Impossible de charger le manga");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMangaById();
-  }, [id]);
-
-  if (loading) return <div>Chargement...</div>;
-  if (error) return <div>{error}</div>;
-  if (!manga) return <div>Manga introuvable</div>;
+  }, [id, fetchMangaById]);
 
   return (
-    <div>
-      <h1>{manga.title}</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen py-10 px-4">
+      <div className="w-full max-w-lg">
+        <Link 
+          to="/" 
+          className="inline-flex items-center text-sm text-zinc-500 hover:text-zinc-300 mb-8 transition-colors"
+        >
+          ← Retour à l'accueil
+        </Link>
 
-      {manga.author && <p>Author: {manga.author}</p>}
+        {loading && (
+          <div className="animate-pulse flex flex-col items-center space-y-4">
+            <div className="h-8 w-48 bg-zinc-800 rounded"></div>
+            <div className="h-64 w-full bg-zinc-800 rounded"></div>
+          </div>
+        )}
 
-      {manga.coverUrl && <img src={manga.coverUrl} alt={manga.title} />}
+        {error && (
+          <div className="p-4 bg-red-900/20 border border-red-500/50 rounded-lg text-red-200 text-center">
+            {error}
+          </div>
+        )}
+
+        {manga && !loading && (
+          <MangaCard manga={manga} />
+        )}
+
+        {!id && !loading && (
+          <div className="text-center text-zinc-500">
+            Manga introuvable.
+          </div>
+        )}
+      </div>
     </div>
   );
 };
