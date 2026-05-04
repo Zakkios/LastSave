@@ -2,7 +2,9 @@
 
 namespace App\Service\External;
 
+use App\DTO\MangaCompleteDTO;
 use App\DTO\MangaDTO;
+use App\Mapper\MangaCompleteMapper;
 use App\Mapper\MangaMapper;
 use App\Service\Http\ApiClient;
 
@@ -13,7 +15,8 @@ class MangaDexService
 
     public function __construct(
         private ApiClient $apiClient,
-        private MangaMapper $mangaMapper
+        private MangaMapper $mangaMapper,
+        private MangaCompleteMapper $mangaCompleteMapper
     ) {}
 
     public function getMangaForAutocomplete(string $query): array
@@ -57,7 +60,7 @@ class MangaDexService
         return $mangaDTO;
     }
 
-    public function getMangaById(string $id): MangaDTO
+    public function getMangaById(string $id): MangaCompleteDTO
     {
         $mangaData = $this->apiClient->get(self::BASE_URL, "/manga/{$id}");
         $mangaRelationships = $mangaData['data']['relationships'];
@@ -75,9 +78,9 @@ class MangaDexService
         ))[0]['id'] ?? null;
         $author = $this->getAuthorName($authorId);
 
-        $mangaDTO = $this->mangaMapper->fromEntity($mangaData, $author, $coverUrl);
+        $mangaCompleteDTO = $this->mangaCompleteMapper->fromEntity($mangaData, $author, $coverUrl);
 
-        return $mangaDTO;
+        return $mangaCompleteDTO;
     }
 
     public function getAuthorName(string $authorId): string
