@@ -1,25 +1,12 @@
 import { useCallback, useState } from "react";
-import { getMangaById, getRandomManga } from "../api";
-import type { MangaResponse } from "../types";
+import { getMangaById, getMangaByPage } from "../api";
+import type { MangaCompleteResponse, MangaShortResponse } from "../types";
 
 export const useManga = () => {
-  const [manga, setManga] = useState<MangaResponse | null>(null);
+  const [manga, setManga] = useState<MangaCompleteResponse | null>(null);
+  const [mangaList, setMangaList] = useState<MangaShortResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const fetchRandomManga = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await getRandomManga();
-      setManga(data);
-    } catch (err) {
-      setError("Impossible de récupérer un manga aléatoire.");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
 
   const fetchMangaById = useCallback(async (id: string) => {
     setLoading(true);
@@ -35,5 +22,26 @@ export const useManga = () => {
     }
   }, []);
 
-  return { manga, loading, error, fetchRandomManga, fetchMangaById };
+  const fetchMangaByPage = useCallback(async (page: number) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getMangaByPage(page);
+      setMangaList(data);
+    } catch (err) {
+      setError("Impossible de charger les mangas.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return {
+    manga,
+    mangaList,
+    loading,
+    error,
+    fetchMangaById,
+    fetchMangaByPage,
+  };
 };
