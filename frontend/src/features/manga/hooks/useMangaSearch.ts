@@ -7,8 +7,8 @@ export const useMangaSearch = () => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<MangaCompleteResponse[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  
-  const debouncedQuery = useDebounce(query, 500);
+
+  const debouncedQuery = useDebounce(query, 200);
 
   useEffect(() => {
     const searchManga = async () => {
