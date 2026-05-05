@@ -3,7 +3,7 @@
 namespace App\Service\External;
 
 use App\DTO\MangaCompleteDTO;
-use App\DTO\MangaDTO;
+use App\DTO\MangaShortDTO;
 use App\Mapper\MangaCompleteMapper;
 use App\Mapper\MangaMapper;
 use App\Service\Http\ApiClient;
@@ -37,7 +37,7 @@ class MangaDexService
         return $mangaDTOs;
     }
 
-    public function getRandomManga(): MangaDTO
+    public function getRandomManga(): MangaShortDTO
     {
         $mangaData = $this->apiClient->get(self::BASE_URL, '/manga/random');
         $mangaRelationships = $mangaData['data']['relationships'];
@@ -55,9 +55,9 @@ class MangaDexService
         ))[0]['id'] ?? null;
         $author = $this->getAuthorName($authorId);
 
-        $mangaDTO = $this->mangaMapper->fromEntity($mangaData, $author, $coverUrl);
+        $mangaShortDTO = $this->mangaMapper->fromEntity($mangaData, $author, $coverUrl);
 
-        return $mangaDTO;
+        return $mangaShortDTO;
     }
 
     public function getMangaById(string $id): MangaCompleteDTO
@@ -81,6 +81,45 @@ class MangaDexService
         $mangaCompleteDTO = $this->mangaCompleteMapper->fromEntity($mangaData, $author, $coverUrl);
 
         return $mangaCompleteDTO;
+    }
+
+    public function getMangaByPage(int $page): array
+    {
+        $limit = 20;
+        $offset = $page * $limit;
+
+        $mangaData = $this->apiClient->get(self::BASE_URL, '/manga', [
+            'query' => [
+                'offset' => $offset,
+                'limit' => $limit,
+                'order[followedCount]' => 'desc',
+                'includes[]' => ['cover_art', 'author'],
+            ],
+        ]);
+
+        $authors = [];
+        $coverUrls = [];
+
+        foreach ($mangaData['data'] as $manga) {
+            $mangaId = $manga['id'] ?? null;
+            $coverId = array_values(array_filter(
+                $manga['relationships'],
+                fn($relation) => $relation['type'] === 'cover_art'
+            ))[0]['id'] ?? null;
+            $coverUrl = $this->getCoverUrl($coverId, $mangaId);
+            $coverUrls[] = $coverUrl;
+
+            $authorId = array_values(array_filter(
+                $manga['relationships'],
+                fn($relation) => $relation['type'] === 'author'
+            ))[0]['id'] ?? null;
+            $author = $this->getAuthorName($authorId);
+            $authors[] = $author;
+        }
+
+        $mangaDTOs = $this->mangaMapper->fromCollection($mangaData, $authors, $coverUrls);
+
+        return $mangaDTOs;
     }
 
     public function getAuthorName(string $authorId): string
