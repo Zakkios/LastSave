@@ -2,7 +2,7 @@
 
 namespace App\DTO;
 
-class MangaDTO
+class MangaShortDTO
 {
     public function __construct(
         public string $id,
