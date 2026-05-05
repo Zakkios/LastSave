@@ -11,6 +11,8 @@ class MangaDexService
 {
     private const BASE_URL = 'https://api.mangadex.org';
     private const COVER_BASE_URL = 'https://uploads.mangadex.org/covers';
+    private const AUTOCOMPLETE_LIMIT = 8;
+    private const PAGE_LIMIT = 20;
 
     public function __construct(
         private ApiClient $apiClient,
@@ -18,12 +20,15 @@ class MangaDexService
         private MangaCompleteMapper $mangaCompleteMapper
     ) {}
 
-    public function getMangaForAutocomplete(string $query): array
+    public function getMangaForAutocomplete(string $query, string $page): array
     {
+        $offset = $page * self::AUTOCOMPLETE_LIMIT;
+
         $params = [
             'query' => [
                 'title' => $query,
-                'limit' => 5,
+                'limit' => self::AUTOCOMPLETE_LIMIT,
+                'offset' => $offset,
                 'order[relevance]' => 'desc',
             ],
         ];
@@ -55,13 +60,12 @@ class MangaDexService
 
     public function getMangaByPage(int $page): array
     {
-        $limit = 20;
-        $offset = $page * $limit;
+        $offset = $page * self::PAGE_LIMIT;
 
         $mangaData = $this->apiClient->get(self::BASE_URL, '/manga', [
             'query' => [
                 'offset' => $offset,
-                'limit' => $limit,
+                'limit' => self::PAGE_LIMIT,
                 'order[followedCount]' => 'desc',
                 'includes' => ['cover_art', 'author'],
             ],

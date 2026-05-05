@@ -19,9 +19,9 @@ class MangaController extends AbstractController
     #[Route('/autocomplete', name: 'app_manga_autocomplete', methods: ['GET'])]
     public function autocompleteManga(Request $request): JsonResponse
     {
-        $query = $request->query->get('q');
-
-        $mangaData = $this->mangaDexService->getMangaForAutocomplete($query);
+        $query = $request->query->get('query');
+        $page = $request->query->get('page');
+        $mangaData = $this->mangaDexService->getMangaForAutocomplete($query, $page);
 
         return $this->json($mangaData);
     }
