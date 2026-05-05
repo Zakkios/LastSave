@@ -1,19 +1,9 @@
 import http from "../../services/http";
-import type { MangaResponse } from "./types";
-
-const getRandomManga = async (): Promise<MangaResponse> => {
-  try {
-    const response = await http.get("/manga/random");
-    return response.data;
-  } catch (error) {
-    console.error("Error calling manga API:", error);
-    throw error;
-  }
-};
+import type { MangaCompleteResponse, MangaShortResponse } from "./types";
 
 const getAutocompleteManga = async (
   query: string,
-): Promise<MangaResponse[]> => {
+): Promise<MangaCompleteResponse[]> => {
   try {
     const response = await http.get(`/manga/autocomplete?q=${query}`);
     return response.data;
@@ -23,7 +13,7 @@ const getAutocompleteManga = async (
   }
 };
 
-const getMangaById = async (id: string): Promise<MangaResponse> => {
+const getMangaById = async (id: string): Promise<MangaCompleteResponse> => {
   try {
     const response = await http.get(`/manga/${id}`);
     return response.data;
@@ -33,4 +23,14 @@ const getMangaById = async (id: string): Promise<MangaResponse> => {
   }
 };
 
-export { getRandomManga, getAutocompleteManga, getMangaById };
+const getMangaByPage = async (page: number): Promise<MangaShortResponse[]> => {
+  try {
+    const response = await http.get(`/manga/page/${page}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error calling manga API:", error);
+    throw error;
+  }
+};
+
+export { getAutocompleteManga, getMangaById, getMangaByPage };

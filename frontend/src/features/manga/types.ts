@@ -1,4 +1,4 @@
-export interface MangaResponse {
+export interface MangaCompleteResponse {
   id: string;
   title: string;
   description: string;
@@ -10,4 +10,11 @@ export interface MangaResponse {
   numberOfChapters: string;
   publicationStatus: string;
   publicationYear: string;
+}
+
+export interface MangaShortResponse {
+  id: string;
+  title: string;
+  author: string;
+  coverUrl: string;
 }
