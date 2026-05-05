@@ -2,8 +2,6 @@
 
 namespace App\DTO;
 
-use App\Enum\MangaPublicationStatus;
-
 class MangaCompleteDTO
 {
     public function __construct(
@@ -16,7 +14,7 @@ class MangaCompleteDTO
         public array $themes,
         public string $numberOfVolumes,
         public string $numberOfChapters,
-        public ?MangaPublicationStatus $publicationStatus,
+        public string $publicationStatus,
         public string $publicationYear
     ) {}
 }
