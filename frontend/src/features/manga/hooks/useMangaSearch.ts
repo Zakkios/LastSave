@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { getAutocompleteManga } from "../api";
-import type { MangaResponse } from "../types";
+import type { MangaCompleteResponse } from "../types";
 import { useDebounce } from "../../../shared/hooks/useDebounce";
 
 export const useMangaSearch = () => {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<MangaResponse[]>([]);
+  const [results, setResults] = useState<MangaCompleteResponse[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   
   const debouncedQuery = useDebounce(query, 500);

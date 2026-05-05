@@ -1,7 +1,7 @@
-import type { MangaResponse } from "../types";
+import type { MangaCompleteResponse } from "../types";
 
 interface MangaCardProps {
-  manga: MangaResponse;
+  manga: MangaCompleteResponse;
 }
 
 export const MangaCard = ({ manga }: MangaCardProps) => {
