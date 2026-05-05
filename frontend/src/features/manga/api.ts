@@ -3,9 +3,16 @@ import type { MangaCompleteResponse, MangaShortResponse } from "./types";
 
 const getAutocompleteManga = async (
   query: string,
-): Promise<MangaCompleteResponse[]> => {
+  page: number,
+): Promise<MangaShortResponse[]> => {
   try {
-    const response = await http.get(`/manga/autocomplete?q=${query}`);
+    const response = await http.get("/manga/autocomplete", {
+      params: {
+        query,
+        page,
+      },
+    });
+
     return response.data;
   } catch (error) {
     console.error("Error calling manga API:", error);
