@@ -16,14 +16,6 @@ class MangaController extends AbstractController
         private MangaDexService $mangaDexService
     ) {}
 
-    #[Route('/random', name: 'app_manga_random', methods: ['GET'])]
-    public function randomManga(): JsonResponse
-    {
-        $mangaData = $this->mangaDexService->getRandomManga();
-
-        return $this->json($mangaData);
-    }
-
     #[Route('/autocomplete', name: 'app_manga_autocomplete', methods: ['GET'])]
     public function autocompleteManga(Request $request): JsonResponse
     {
