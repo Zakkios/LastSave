@@ -45,7 +45,11 @@ const HomePage = () => {
         dataLength={items.length}
         next={fetchMore}
         hasMore={hasMore}
-        loader={<p className="text-zinc-400 text-center py-4">Chargement...</p>}
+        loader={
+          <div className="animate-pulse flex flex-col items-center space-y-4 py-4">
+            <div className="h-28 w-full bg-zinc-800 rounded"></div>
+          </div>
+        }
         endMessage={
           <p className="text-zinc-500 text-center py-4">
             Tous les mangas sont chargés.
