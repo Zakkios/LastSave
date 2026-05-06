@@ -27,14 +27,17 @@ export const MangaSearch = () => {
       />
 
       {isOpen && results.length > 0 && (
-        <div className="absolute left-0 right-0 mt-2 h-52 bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl z-20 overflow-y-scroll">
+        <div className="absolute left-0 right-0 mt-2 h-72 bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl z-20 overflow-y-scroll">
           <InfiniteScroll
             dataLength={results.length}
             next={fetchMore}
             hasMore={hasMore}
             loader={
-              <div className="animate-pulse flex flex-col items-center space-y-4 px-8 py-3">
-                <div className="h-8 w-full bg-zinc-800 rounded"></div>
+              <div className="flex gap-3 px-4 pt-4 pb-3 bg-zinc-900/50 animate-pulse">
+                <div className="flex flex-col justify-center flex-1 space-y-2">
+                  <div className="h-4 w-3/4 bg-zinc-800 rounded"></div>
+                  <div className="h-3 w-1/3 bg-zinc-800 rounded"></div>
+                </div>
               </div>
             }
             endMessage={
@@ -43,12 +46,12 @@ export const MangaSearch = () => {
               </p>
             }
           >
-            <div className="w-full max-w-2xl flex flex-col gap-3">
+            <div className="w-full max-w-2xl flex flex-col">
               {results.map((item) => (
                 <li
                   key={item.id}
                   onClick={() => handleSelect(item.id)}
-                  className="px-4 py-3 hover:bg-zinc-800 cursor-pointer transition-colors border-b border-zinc-800 last:border-0"
+                  className="px-4 py-3 hover:bg-zinc-800 cursor-pointer transition-colors border-b border-zinc-800"
                 >
                   <p className="font-medium">{item.title}</p>
                   <p className="text-xs text-zinc-500">{item.author}</p>
