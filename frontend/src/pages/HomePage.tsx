@@ -46,8 +46,12 @@ const HomePage = () => {
         next={fetchMore}
         hasMore={hasMore}
         loader={
-          <div className="animate-pulse flex flex-col items-center space-y-4 py-4">
-            <div className="h-28 w-full bg-zinc-800 rounded"></div>
+          <div className="w-2xl flex mt-3 gap-3 p-3 border border-zinc-800 rounded-lg bg-zinc-900/50 animate-pulse">
+            <div className="w-16 h-24 shrink-0 rounded bg-zinc-800"></div>
+            <div className="flex flex-col justify-center flex-1 space-y-2">
+              <div className="h-4 w-3/4 bg-zinc-800 rounded"></div>
+              <div className="h-3 w-1/2 bg-zinc-800 rounded"></div>
+            </div>
           </div>
         }
         endMessage={
