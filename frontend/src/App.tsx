@@ -7,11 +7,13 @@ import MangaDetailPage from "./pages/MangaDetailPage";
 import { AuthProvider } from "./features/auth/context/AuthProvider";
 import ProtectedRoute from "./features/auth/routes/ProtectedRoute";
 import GuestRoute from "./features/auth/routes/GuestRoute";
+import Navbar from "./shared/components/Navbar";
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <Navbar />
         <Routes>
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<HomePage />} />
