@@ -28,7 +28,7 @@ const registerErrorMessages: Record<string, string> = {
 const getAuthErrorMessage = (
   message: string | undefined,
   messages: Record<string, string>,
-  fallback: string
+  fallback: string,
 ) => {
   if (!message) {
     return fallback;
@@ -42,7 +42,7 @@ const isUnauthorizedError = (error: unknown) => {
 };
 
 export const registerUser = async (
-  payload: RegisterPayload
+  payload: RegisterPayload,
 ): Promise<RegisterResponse> => {
   try {
     const response = await http.post<RegisterResponse>("/register", payload);
@@ -53,8 +53,8 @@ export const registerUser = async (
         getAuthErrorMessage(
           error.response?.data?.message,
           registerErrorMessages,
-          "Impossible de créer le compte pour le moment."
-        )
+          "Impossible de créer le compte pour le moment.",
+        ),
       );
     }
 
@@ -62,9 +62,7 @@ export const registerUser = async (
   }
 };
 
-export const loginUser = async (
-  payload: LoginPayload
-): Promise<void> => {
+export const loginUser = async (payload: LoginPayload): Promise<void> => {
   try {
     await http.post("/login", payload);
   } catch (error) {
@@ -73,8 +71,8 @@ export const loginUser = async (
         getAuthErrorMessage(
           error.response?.data?.message,
           loginErrorMessages,
-          "Impossible de se connecter pour le moment."
-        )
+          "Impossible de se connecter pour le moment.",
+        ),
       );
     }
 
@@ -93,6 +91,18 @@ export const getCurrentUser = async (): Promise<AuthUser | null> => {
   } catch (error) {
     if (isUnauthorizedError(error)) {
       return null;
+    }
+
+    throw error;
+  }
+};
+
+export const logoutUser = async (): Promise<void> => {
+  try {
+    await http.post("/logout");
+  } catch (error) {
+    if (isUnauthorizedError(error)) {
+      return;
     }
 
     throw error;
