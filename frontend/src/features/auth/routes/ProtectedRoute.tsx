@@ -10,7 +10,7 @@ const ProtectedRoute = () => {
     return (
       <AuthRouteStatus
         title="Vérification en cours"
-        message="Votre session est en cours de validation. Veuillez patienter."
+        message="Validation de votre session en cours… Cela peut prendre jusqu’à 15 secondes."
       />
     );
   }
