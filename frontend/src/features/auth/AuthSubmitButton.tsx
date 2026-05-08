@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
+import Button from "../../shared/components/Button/Button";
 
-interface AuthSubmitButtonProps
-  extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface AuthSubmitButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
   isSubmitting: boolean;
   submittingLabel: string;
@@ -14,14 +14,18 @@ const AuthSubmitButton = ({
   ...props
 }: AuthSubmitButtonProps) => {
   return (
-    <button
-      className="h-11 w-full rounded-md bg-emerald-400 px-4 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-200 focus:ring-offset-2 focus:ring-offset-zinc-900 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-400"
-      disabled={isSubmitting}
-      type="submit"
-      {...props}
-    >
-      {isSubmitting ? submittingLabel : children}
-    </button>
+    <>
+      <Button
+        variant="primary"
+        size="sm"
+        type="submit"
+        disabled={isSubmitting}
+        className="w-full py-3"
+        {...props}
+      >
+        {isSubmitting ? submittingLabel : children}
+      </Button>
+    </>
   );
 };
 
