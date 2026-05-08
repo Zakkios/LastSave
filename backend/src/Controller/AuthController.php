@@ -63,4 +63,10 @@ class AuthController extends AbstractController
 
         return $this->json(['message' => 'User created'], 201);
     }
+
+    #[Route('/logout', name: 'app_auth_logout', methods: ['POST'])]
+    public function logout(): JsonResponse
+    {
+        throw new \LogicException('This method should be intercepted by the firewall.');
+    }
 }

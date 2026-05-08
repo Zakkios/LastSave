@@ -17,3 +17,7 @@ lexik_jwt_authentication:
             domain: null
             secure: true
             httpOnly: true
+
+    blocklist_token:
+        enabled: true
+        cache: cache.app
