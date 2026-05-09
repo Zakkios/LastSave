@@ -40,4 +40,33 @@ const getMangaByPage = async (page: number): Promise<MangaShortResponse[]> => {
   }
 };
 
-export { getAutocompleteManga, getMangaById, getMangaByPage };
+const createMangaEntry = async (payload: {
+  providerId: string;
+  status: string;
+}): Promise<void> => {
+  try {
+    await http.post("/manga_entries", payload);
+  } catch (error) {
+    console.error("Error calling manga API:", error);
+    throw error;
+  }
+};
+
+const updateMangaEntry = async (payload: {
+  providerId: string;
+  status: string;
+}) => {
+  try {
+    await http.patch(`/manga_entries`, payload);
+  } catch (error) {
+    console.error("Error calling manga API:", error);
+    throw error;
+  }
+};
+export {
+  getAutocompleteManga,
+  getMangaById,
+  getMangaByPage,
+  createMangaEntry,
+  updateMangaEntry,
+};
