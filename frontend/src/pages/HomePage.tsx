@@ -1,46 +1,27 @@
 import InfiniteScroll from "react-infinite-scroll-component";
-import { MangaSearch } from "../features/manga/components/MangaSearch";
-import { useState } from "react";
-import type { MangaShortResponse } from "../features/manga/types";
-import { getMangaByPage } from "../features/manga/api";
-import { MangaPreviewCard } from "../features/manga/components/MangaPreviewCard";
 import { useNavigate } from "react-router";
+import { MangaSearch } from "../features/manga/components/MangaSearch";
+import { MangaPreviewCard } from "../features/manga/components/MangaPreviewCard";
+import { useMangaInfiniteList } from "../features/manga/hooks/useMangaInfiniteList";
 
 const HomePage = () => {
-  const [page, setPage] = useState<number>(0);
-  const [items, setItems] = useState<MangaShortResponse[]>([]);
-  const [hasMore, setHasMore] = useState<boolean>(true);
-  const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
-
-  const fetchMore = async () => {
-    if (loading || !hasMore) return;
-
-    setLoading(true);
-
-    const newItems = await getMangaByPage(page);
-
-    setItems((prevItems) => [...prevItems, ...newItems]);
-    setPage((prevPage) => prevPage + 1);
-
-    if (newItems.length < 20) {
-      setHasMore(false);
-    }
-
-    setLoading(false);
-  };
+  const { items, hasMore, error, fetchMore } = useMangaInfiniteList();
 
   const handleClickPreviewCard = (id: string) => {
     navigate(`/manga/${id}`);
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-10 px-4">
-      <h1 className="text-4xl font-extrabold mb-8 bg-linear-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
+    <div className="flex min-h-screen flex-col items-center justify-center px-4 py-10">
+      <h1 className="mb-8 bg-linear-to-r from-blue-400 to-emerald-400 bg-clip-text text-4xl font-extrabold text-transparent">
         LastSave Explorer
       </h1>
 
       <MangaSearch />
+
+      {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
+
       <InfiniteScroll
         dataLength={items.length}
         next={fetchMore}
@@ -55,19 +36,20 @@ const HomePage = () => {
           </div>
         }
         endMessage={
-          <p className="text-zinc-500 text-center py-4">
+          <p className="py-4 text-center text-zinc-500">
             Tous les mangas sont chargés.
           </p>
         }
       >
-        <div className="w-full max-w-2xl flex flex-col gap-3">
+        <div className="flex w-full max-w-2xl flex-col gap-3">
           {items.map((item) => (
             <button
-              className="cursor-pointer"
+              type="button"
+              className="w-full cursor-pointer text-left"
               onClick={() => handleClickPreviewCard(item.id)}
               key={item.id}
             >
-              <MangaPreviewCard key={item.id} manga={item} />
+              <MangaPreviewCard manga={item} />
             </button>
           ))}
         </div>

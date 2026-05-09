@@ -1,4 +1,4 @@
-import StatusBadge from "../../../shared/components/StatusBadge/StatusBadge";
+import StatusBadge from "./StatusBadge/StatusBadge";
 import type { MangaShortResponse } from "../types";
 
 interface MangaPreviewCardProps {
