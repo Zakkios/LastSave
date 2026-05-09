@@ -1,25 +1,25 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Dropdown from "../../../shared/components/Dropdown/Dropdown";
-import type { MangaCompleteResponse } from "../types";
+import type { MangaCompleteResponse, MangaLibraryStatus } from "../types";
 import Button from "../../../shared/components/Button/Button";
 import { createMangaEntry, updateMangaEntry } from "../api";
 import FlashMessage from "../../../shared/components/FlashMessage/FlashMessage";
 import FullPageLoading from "../../../shared/components/FullPageLoading";
+import type { StatusVariant } from "./StatusBadge/statusBadge.types";
+import {
+  getMangaReadingStatusLabel,
+  isMangaReadingStatus,
+  mangaReadingStatusOptions,
+} from "../mangaReadingStatus";
 
 type MangaEntryModalProps = {
   isOpen: boolean;
   onClose: () => void;
   manga: MangaCompleteResponse;
-  status: string;
+  status: StatusVariant | null;
   isInLibrary: boolean;
+  onSaved: (status: MangaLibraryStatus) => void;
 };
-
-const mangaReadingStatusOptions = [
-  { label: "À lire", value: "to_read" },
-  { label: "En cours", value: "reading" },
-  { label: "Terminé", value: "completed" },
-  { label: "Abandonné", value: "dropped" },
-];
 
 const MangaEntryModal = ({
   isOpen,
@@ -27,54 +27,67 @@ const MangaEntryModal = ({
   manga,
   status,
   isInLibrary,
+  onSaved,
 }: MangaEntryModalProps) => {
-  const [selectedStatus, setSelectedStatus] = useState(status);
-  const [flashMessage, setFlashMessage] = useState("");
-  const [flashVariant, setFlashVariant] = useState<"success" | "error">(
-    "success",
+  const [selectedStatus, setSelectedStatus] = useState<StatusVariant | "">(
+    status ?? "",
   );
+  const [flashMessage, setFlashMessage] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    setSelectedStatus(status ?? "");
+    setFlashMessage("");
+  }, [isOpen, status]);
 
   if (!isOpen) {
     return null;
   }
 
+  const handleStatusChange = (value: string) => {
+    if (isMangaReadingStatus(value)) {
+      setSelectedStatus(value);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!selectedStatus) {
-      setFlashVariant("error");
       setFlashMessage("Choisis un statut avant d'ajouter le manga.");
       return;
     }
+
     setLoading(true);
 
     try {
+      const payload = {
+        providerId: manga.id,
+        status: selectedStatus,
+      };
+
       if (isInLibrary) {
-        await updateMangaEntry({
-          providerId: manga.id,
-          status: selectedStatus,
-        });
+        await updateMangaEntry(payload);
       } else {
-        await createMangaEntry({
-          providerId: manga.id,
-          status: selectedStatus,
-        });
+        await createMangaEntry(payload);
       }
 
-      setFlashVariant("success");
-      setFlashMessage(
-        isInLibrary ? "Manga mis à jour." : "Manga ajouté à ta liste.",
-      );
+      onSaved({
+        isInLibrary: true,
+        readingStatus: selectedStatus,
+        readingStatusLabel: getMangaReadingStatusLabel(selectedStatus),
+      });
 
-      setLoading(false);
+      onClose();
     } catch {
-      setFlashVariant("error");
-      setFlashVariant("error");
       setFlashMessage(
         isInLibrary
           ? "Impossible de mettre à jour ce manga."
           : "Impossible d'ajouter ce manga à ta liste.",
       );
-
+    } finally {
       setLoading(false);
     }
   };
@@ -158,13 +171,13 @@ const MangaEntryModal = ({
               value={selectedStatus}
               options={mangaReadingStatusOptions}
               placeholder="Choisir un statut"
-              onChange={setSelectedStatus}
+              onChange={handleStatusChange}
             />
             {flashMessage && (
               <div className="mb-4">
                 <FlashMessage
                   message={flashMessage}
-                  variant={flashVariant}
+                  variant="error"
                   onClose={() => setFlashMessage("")}
                 />
               </div>
@@ -178,7 +191,7 @@ const MangaEntryModal = ({
               variant="primary"
               size="sm"
               onClick={handleSubmit}
-              disabled={!selectedStatus}
+              disabled={!selectedStatus || loading}
               className="py-2.5"
             >
               {isInLibrary ? "Modifier" : "Ajouter"}
