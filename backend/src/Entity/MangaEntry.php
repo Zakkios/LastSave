@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Enum\MangaStatus;
 use App\Repository\MangaEntryRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Polyfill\Uuid\Uuid;
 
 #[ORM\Entity(repositoryClass: MangaEntryRepository::class)]
 #[ORM\UniqueConstraint(name: 'uniq_owner_provider_manga', columns: ['owner_id', 'provider_id'])]
@@ -21,8 +22,8 @@ class MangaEntry
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $providerId = null;
+    #[ORM\Column(type: 'uuid', nullable: false)]
+    private ?Uuid $providerId = null;
 
     #[ORM\Column(enumType: MangaStatus::class)]
     private ?MangaStatus $status = null;
@@ -42,12 +43,12 @@ class MangaEntry
         return $this->id;
     }
 
-    public function getProviderId(): ?string
+    public function getProviderId(): ?Uuid
     {
         return $this->providerId;
     }
 
-    public function setProviderId(string $providerId): static
+    public function setProviderId(Uuid $providerId): static
     {
         $this->providerId = $providerId;
 
