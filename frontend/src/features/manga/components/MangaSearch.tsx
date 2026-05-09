@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useMangaSearch } from "../hooks/useMangaSearch";
 import InfiniteScroll from "react-infinite-scroll-component";
+import StatusBadge from "../../../shared/components/StatusBadge/StatusBadge";
 
 export const MangaSearch = () => {
   const navigate = useNavigate();
@@ -53,8 +54,24 @@ export const MangaSearch = () => {
                   onClick={() => handleSelect(item.id)}
                   className="px-4 py-3 hover:bg-zinc-800 cursor-pointer transition-colors border-b border-zinc-800"
                 >
-                  <p className="font-medium">{item.title}</p>
-                  <p className="text-xs text-zinc-500">{item.author}</p>
+                  <div>
+                    <div className="flex justify-between">
+                      <div>
+                        <p className="font-medium">{item.title}</p>
+                        <p className="text-xs text-zinc-500">{item.author}</p>
+                      </div>
+                      <div>
+                        <p className="text-zinc-400 text-sm truncate">
+                          {item.readingStatus && item.readingStatusLabel && (
+                            <StatusBadge
+                              label={item.readingStatusLabel}
+                              status={item.readingStatus}
+                            />
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </li>
               ))}
             </div>
