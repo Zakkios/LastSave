@@ -6,7 +6,10 @@ import AuthSubmitButton from "../AuthSubmitButton";
 import AuthTextField from "../AuthTextField";
 import type { LoginFormValues } from "../types";
 import { useAuth } from "../hooks/useAuth";
-import { useAuthFormState, type AuthFormErrors } from "../hooks/useAuthFormState";
+import {
+  useAuthFormState,
+  type AuthFormErrors,
+} from "../hooks/useAuthFormState";
 import { isValidEmail } from "../validation";
 
 type LoginFormErrors = AuthFormErrors<LoginFormValues>;
@@ -21,13 +24,15 @@ const getRedirectPath = (state: unknown) => {
     return "/";
   }
 
-  const from = (state as {
-    from?: {
-      hash?: unknown;
-      pathname?: unknown;
-      search?: unknown;
-    };
-  }).from;
+  const from = (
+    state as {
+      from?: {
+        hash?: unknown;
+        pathname?: unknown;
+        search?: unknown;
+      };
+    }
+  ).from;
 
   if (!from || typeof from.pathname !== "string") {
     return "/";
@@ -111,7 +116,7 @@ const LoginForm = () => {
       setFeedback(
         error instanceof Error
           ? error.message
-          : "Impossible de se connecter pour le moment."
+          : "Impossible de se connecter pour le moment.",
       );
     } finally {
       setIsSubmitting(false);
