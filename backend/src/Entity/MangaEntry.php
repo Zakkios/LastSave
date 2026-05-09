@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Enum\MangaStatus;
+use App\Enum\MangaReadingStatus;
 use App\Repository\MangaEntryRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
@@ -25,8 +25,8 @@ class MangaEntry
     #[ORM\Column(type: 'uuid', nullable: false)]
     private ?Uuid $providerId = null;
 
-    #[ORM\Column(enumType: MangaStatus::class)]
-    private ?MangaStatus $status = null;
+    #[ORM\Column(enumType: MangaReadingStatus::class)]
+    private ?MangaReadingStatus $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'mangaEntries')]
     #[ORM\JoinColumn(nullable: false)]
@@ -55,12 +55,12 @@ class MangaEntry
         return $this;
     }
 
-    public function getStatus(): ?MangaStatus
+    public function getStatus(): ?MangaReadingStatus
     {
         return $this->status;
     }
 
-    public function setStatus(MangaStatus $status): static
+    public function setStatus(MangaReadingStatus $status): static
     {
         $this->status = $status;
 
