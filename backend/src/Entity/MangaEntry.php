@@ -5,7 +5,7 @@ namespace App\Entity;
 use App\Enum\MangaStatus;
 use App\Repository\MangaEntryRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Polyfill\Uuid\Uuid;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: MangaEntryRepository::class)]
 #[ORM\UniqueConstraint(name: 'uniq_owner_provider_manga', columns: ['owner_id', 'provider_id'])]
