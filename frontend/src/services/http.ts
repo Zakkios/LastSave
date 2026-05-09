@@ -11,7 +11,7 @@ const authRefreshExcludedPaths = new Set([
   "/login",
   "/register",
   "/token/refresh",
-  "/token/logout",
+  "/logout",
 ]);
 const authFailureListeners = new Set<AuthFailureListener>();
 const recentRefreshWindowMs = 5_000;
@@ -129,7 +129,7 @@ http.interceptors.response.use(
     }
 
     return http(originalRequest);
-  }
+  },
 );
 
 export default http;

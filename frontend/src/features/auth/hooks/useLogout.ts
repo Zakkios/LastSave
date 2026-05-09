@@ -1,16 +1,23 @@
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import { logoutUser } from "../api";
-import { useState } from "react";
+import { useAuth } from "./useAuth";
 
 const useLogout = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState<boolean>(false);
+  const { clearUser } = useAuth();
+  const [loading, setLoading] = useState(false);
 
   const logout = async () => {
     setLoading(true);
-    await logoutUser();
-    setLoading(false);
-    navigate("/login");
+
+    try {
+      await logoutUser();
+    } finally {
+      clearUser();
+      setLoading(false);
+      navigate("/login", { replace: true });
+    }
   };
 
   return { logout, loading };
