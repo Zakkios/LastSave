@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import getRandomGame from "../api";
+import { getRandomGame } from "../api";
 import type { GameResponse } from "../types";
 
 export const useGame = () => {

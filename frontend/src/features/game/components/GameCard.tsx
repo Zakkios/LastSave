@@ -1,33 +1,53 @@
-import type { GameResponse } from "../types";
+import type { GameShortResponse } from "../types";
+import { Star, Gamepad2 } from "lucide-react";
 
 interface GameCardProps {
-  game: GameResponse;
+  game: GameShortResponse;
 }
 
 export const GameCard = ({ game }: GameCardProps) => {
   return (
-    <div className="text-center p-4 border border-zinc-800 rounded-lg bg-zinc-900/50">
-      <h3 className="text-xl font-bold mb-2">{game.name}</h3>
-      <p className="text-zinc-400 text-sm mb-4 line-clamp-3 leading-relaxed">
-        {game.summary}
-      </p>
-      
-      <div className="flex flex-wrap justify-center gap-4 text-sm mb-4">
-        <p className="px-2 py-1 bg-zinc-800 rounded text-zinc-300">
-          Note: <span className="font-bold text-emerald-400">{Math.round(game.rating)}%</span>
-        </p>
-        <p className="px-2 py-1 bg-zinc-800 rounded text-zinc-300">
-          Plateformes: {game.platforms?.length || 0}
-        </p>
-      </div>
+    <article className="w-full p-3 border border-zinc-800 rounded-lg bg-zinc-900/50 hover:bg-zinc-900 transition-colors">
+      <div className="flex justify-between">
+        <div className="flex gap-3">
+          <div className="w-16 h-24 shrink-0 overflow-hidden rounded bg-zinc-800 flex items-center justify-center">
+            {game.coverUrl ? (
+              <img
+                src={game.coverUrl}
+                alt={`Couverture de ${game.title}`}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+            ) : (
+              <Gamepad2 className="h-8 w-8 text-zinc-700" />
+            )}
+          </div>
 
-      {game.cover?.image_id && (
-        <img
-          src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`}
-          alt={`Couverture de ${game.name}`}
-          className="m-auto rounded shadow-lg max-h-64 object-cover"
-        />
-      )}
-    </div>
+          <div className="flex flex-col justify-center min-w-0 text-left">
+            <h3 className="text-base font-bold text-zinc-100 mb-1 line-clamp-2 wrap-break-word">
+              {game.title}
+            </h3>
+
+            <p className="text-zinc-400 text-sm truncate">
+              {game.developer || "Développeur inconnu"}
+            </p>
+          </div>
+        </div>
+        
+        <div className="flex flex-col items-end gap-2">
+          {game.rating && (
+            <div className="flex items-center gap-1 text-emerald-400 text-sm font-bold">
+              <Star className="h-3 w-3 fill-current" />
+              {Math.round(game.rating)}%
+            </div>
+          )}
+          {game.statusLabel && (
+            <span className="rounded-full bg-zinc-800 px-2 py-0.5 text-[10px] font-semibold text-zinc-300 uppercase">
+              {game.statusLabel}
+            </span>
+          )}
+        </div>
+      </div>
+    </article>
   );
 };
