@@ -9,6 +9,7 @@ export const useMangaSearch = () => {
   const [results, setResults] = useState<MangaShortResponse[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [hasMore, setHasMore] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const debouncedQuery = useDebounce(query, 200);
 
@@ -36,6 +37,7 @@ export const useMangaSearch = () => {
     const fetchFirstPage = async () => {
       isFetchingRef.current = true;
       setIsSearching(true);
+      setError(null);
 
       try {
         const data = await getAutocompleteManga(cleanQuery, 0);
@@ -47,12 +49,13 @@ export const useMangaSearch = () => {
         setResults(data);
         pageRef.current = 1;
         setHasMore(data.length === MANGA_SEARCH_LIMIT);
-      } catch (error) {
+      } catch (err) {
         if (requestId !== requestIdRef.current) {
           return;
         }
 
-        console.error("Error fetching autocomplete results:", error);
+        console.error("Error fetching autocomplete results:", err);
+        setError("Une erreur est survenue lors de la recherche.");
         setResults([]);
         setHasMore(false);
       } finally {
@@ -89,12 +92,13 @@ export const useMangaSearch = () => {
       setResults((prev) => [...prev, ...data]);
       pageRef.current = nextPage + 1;
       setHasMore(data.length === MANGA_SEARCH_LIMIT);
-    } catch (error) {
+    } catch (err) {
       if (requestId !== requestIdRef.current) {
         return;
       }
 
-      console.error("Error fetching more autocomplete results:", error);
+      console.error("Error fetching more autocomplete results:", err);
+      setError("Impossible de charger plus de résultats.");
       setHasMore(false);
     } finally {
       if (requestId === requestIdRef.current) {
@@ -110,6 +114,7 @@ export const useMangaSearch = () => {
     results,
     hasMore,
     isSearching,
+    error,
     fetchMore,
   };
 };
