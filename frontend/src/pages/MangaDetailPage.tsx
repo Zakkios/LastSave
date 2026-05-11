@@ -21,7 +21,7 @@ const MangaDetailPage = () => {
       </div>
 
       {loading && (
-        <div className="flex min-h-[400px] flex-col items-center justify-center gap-4 py-20">
+        <div className="flex min-h-100 flex-col items-center justify-center gap-4 py-20">
           <Loader2 className="h-10 w-10 animate-spin text-indigo-500" />
           <p className="text-zinc-400">Chargement des détails du manga...</p>
         </div>

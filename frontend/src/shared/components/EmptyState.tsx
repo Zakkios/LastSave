@@ -9,7 +9,7 @@ interface EmptyStateProps {
 
 const EmptyState = ({ icon, title, description, action }: EmptyStateProps) => {
   return (
-    <div className="flex min-h-[400px] flex-col items-center justify-center rounded-xl border border-dashed border-zinc-800 bg-zinc-900/20 p-8 text-center">
+    <div className="flex min-h-100 flex-col items-center justify-center rounded-xl border border-dashed border-zinc-800 bg-zinc-900/20 p-8 text-center">
       {icon && (
         <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-zinc-800 text-2xl">
           {icon}

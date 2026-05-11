@@ -20,7 +20,7 @@ const GameDetailPage = () => {
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
         {/* Colonne Gauche : Placeholder Couverture */}
         <div className="lg:col-span-4 xl:col-span-3">
-          <Card className="aspect-[2/3] w-full flex items-center justify-center bg-zinc-900 border-zinc-800 border-dashed border-2">
+          <Card className="aspect-2/3 w-full flex items-center justify-center bg-zinc-900 border-zinc-800 border-dashed border-2">
             <div className="text-center p-6">
               <Gamepad2 className="h-12 w-12 text-zinc-700 mx-auto mb-4" />
               <p className="text-zinc-600 text-sm font-medium">Image non disponible</p>
