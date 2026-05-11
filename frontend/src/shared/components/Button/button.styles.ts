@@ -3,6 +3,8 @@ import type { ButtonSize, ButtonVariant } from "./button.types";
 export const variantClasses: Record<ButtonVariant, string> = {
   primary:
     "bg-emerald-400 px-4 font-semibold text-zinc-950 transition hover:bg-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-200 focus:ring-offset-2 focus:ring-offset-zinc-900 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-400 ",
+  danger:
+    "text-rose-400 hover:text-rose-300 border-rose-900/50 bg-rose-900/10 hover:bg-rose-900/20",
   ghost: "bg-transparent hover:bg-zinc-700",
 };
 
