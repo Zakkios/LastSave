@@ -29,19 +29,21 @@ class MangaDexService
                 'title' => $query,
                 'limit' => self::AUTOCOMPLETE_LIMIT,
                 'offset' => $offset,
-                'includes' => ['author'],
+                'includes' => ['cover_art', 'author'],
                 'order[relevance]' => 'desc',
             ],
         ];
         $mangaData = $this->apiClient->get(self::BASE_URL, '/manga', $params);
 
         $authors = [];
+        $coverUrls = [];
 
         foreach ($mangaData['data'] ?? [] as $manga) {
             $authors[] = $this->getAuthorNameFromRelationship($manga);
+            $coverUrls[] = $this->getCoverUrlFromRelationship($manga);
         }
 
-        return $this->mangaMapper->fromCollection($mangaData, $authors);
+        return $this->mangaMapper->fromCollection($mangaData, $authors, $coverUrls);
     }
 
     public function getMangaById(string $id): MangaCompleteDTO
