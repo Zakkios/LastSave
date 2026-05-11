@@ -1,16 +1,130 @@
 @import "tailwindcss";
 
-html {
-  color-scheme: dark;
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --color-sidebar-background: var(--sidebar-background);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }
 
-body,
-#root {
-  min-height: 100vh;
+@layer base {
+  :root {
+    --background: #09090b;
+    --foreground: #fafafa;
+    --card: #09090b;
+    --card-foreground: #fafafa;
+    --popover: #09090b;
+    --popover-foreground: #fafafa;
+    --primary: #fafafa;
+    --primary-foreground: #18181b;
+    --secondary: #27272a;
+    --secondary-foreground: #fafafa;
+    --muted: #27272a;
+    --muted-foreground: #a1a1aa;
+    --accent: #27272a;
+    --accent-foreground: #fafafa;
+    --destructive: #7f1d1d;
+    --destructive-foreground: #fafafa;
+    --success: #065f46;
+    --success-foreground: #fafafa;
+    --warning: #92400e;
+    --warning-foreground: #fafafa;
+    --border: #27272a;
+    --input: #27272a;
+    --ring: #d4d4d8;
+    --radius: 0.5rem;
+    --sidebar-background: #09090b;
+    --sidebar-foreground: #a1a1aa;
+    --sidebar-primary: #fafafa;
+    --sidebar-primary-foreground: #09090b;
+    --sidebar-accent: #27272a;
+    --sidebar-accent-foreground: #fafafa;
+    --sidebar-border: #27272a;
+    --sidebar-ring: #d4d4d8;
+  }
+
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body,
+  #root {
+    min-height: 100vh;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    margin: 0;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
 }
 
-body {
-  @apply bg-zinc-950 text-zinc-100 antialiased;
-  margin: 0;
-  margin-top: 65px;
+@layer utilities {
+  .glass {
+    @apply bg-background/60 backdrop-blur-md border border-border/50;
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-br from-zinc-100 to-zinc-500;
+  }
+
+  /* Scrollbar discrÃ¨te */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-zinc-800 rounded-full hover:bg-zinc-700 transition-colors;
+  }
 }
