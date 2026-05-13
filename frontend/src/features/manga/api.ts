@@ -66,8 +66,6 @@ const updateMangaEntry = async (payload: MangaEntryPayload): Promise<void> => {
 
 const getMangaLibrary = async (): Promise<MangaShortResponse[]> => {
   try {
-    // This endpoint does not exist yet in the backend.
-    // Replace with http.get("/manga/library") once implemented.
     const response = await http.get<MangaShortResponse[]>("/manga/library");
     return response.data;
   } catch (error) {
