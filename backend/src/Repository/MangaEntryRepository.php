@@ -45,6 +45,11 @@ class MangaEntryRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findByOwner(User $user): array
+    {
+        return $this->findBy(['owner' => $user]);
+    }
+
     //    /**
     //     * @return MangaEntry[] Returns an array of MangaEntry objects
     //     */
