@@ -39,8 +39,8 @@ class MangaController extends AbstractController
         return $this->json($mangaData);
     }
 
-    #[Route('/library', name: 'app_manga_library', methods: ['GET'])]
-    public function mangaLibrary(): JsonResponse
+    #[Route('/library/page/{page}', name: 'app_manga_library', methods: ['GET'])]
+    public function mangaLibrary(int $page): JsonResponse
     {
         $user = $this->getUser();
 
@@ -50,7 +50,13 @@ class MangaController extends AbstractController
             ], 401);
         }
 
-        $mangasData = $this->mangaLibraryQueryService->getMangaLibraryForUser($user);
+        if ($page < 0) {
+            return $this->json([
+                'message' => 'Invalid page',
+            ], 400);
+        }
+
+        $mangasData = $this->mangaLibraryQueryService->getMangaLibraryForUser($user, $page);
 
         return $this->json($mangasData);
     }

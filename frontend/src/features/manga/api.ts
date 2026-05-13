@@ -64,9 +64,9 @@ const updateMangaEntry = async (payload: MangaEntryPayload): Promise<void> => {
   }
 };
 
-const getMangaLibrary = async (): Promise<MangaShortResponse[]> => {
+const getMangaLibrary = async (page: number): Promise<MangaShortResponse[]> => {
   try {
-    const response = await http.get<MangaShortResponse[]>("/manga/library");
+    const response = await http.get<MangaShortResponse[]>(`/manga/library/page/${page}`);
     return response.data;
   } catch (error) {
     console.error("Error calling manga library API:", error);
