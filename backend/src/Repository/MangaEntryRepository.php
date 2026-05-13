@@ -45,9 +45,22 @@ class MangaEntryRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findByOwner(User $user): array
-    {
-        return $this->findBy(['owner' => $user]);
+    public function findByOwnerPaginated(
+        User $user,
+        int $page = 0,
+        int $limit = 20
+    ): array {
+        $page = max(0, $page);
+        $limit = max(1, $limit);
+
+        $offset = $page * $limit;
+
+        return $this->findBy(
+            ['owner' => $user],
+            ['id' => 'DESC'],
+            $limit,
+            $offset
+        );
     }
 
     //    /**

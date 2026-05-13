@@ -46,9 +46,9 @@ class MangaLibraryQueryService
         return $this->enrichMangaCollectionForUser($mangas, $user);
     }
 
-    public function getMangaLibraryForUser(User $user): array
+    public function getMangaLibraryForUser(User $user, int $page): array
     {
-        $mangaEntries = $this->mangaEntryService->findUserMangaEntries($user);
+        $mangaEntries = $this->mangaEntryService->findUserMangaEntries($user, $page);
 
         $providerIds = [];
 

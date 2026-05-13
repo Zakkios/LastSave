@@ -113,8 +113,8 @@ class MangaEntryService
         );
     }
 
-    public function findUserMangaEntries(User $user): array
+    public function findUserMangaEntries(User $user, int $page): array
     {
-        return $this->mangaEntryRepository->findByOwner($user);
+        return $this->mangaEntryRepository->findByOwnerPaginated($user, $page);
     }
 }
