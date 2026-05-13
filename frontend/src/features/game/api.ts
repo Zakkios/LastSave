@@ -32,9 +32,6 @@ const getGameById = async (id: string): Promise<GameCompleteResponse> => {
   }
 };
 
-/**
- * TODO: Backend implementation required for GET /game/library
- */
 const getGameLibrary = async (): Promise<GameShortResponse[]> => {
   try {
     const response = await http.get<GameShortResponse[]>("/game/library");
