@@ -46,6 +46,25 @@ class MangaLibraryQueryService
         return $this->enrichMangaCollectionForUser($mangas, $user);
     }
 
+    public function getMangaLibraryForUser(User $user): array
+    {
+        $mangaEntries = $this->mangaEntryService->findUserMangaEntries($user);
+
+        $providerIds = [];
+
+        foreach ($mangaEntries as $mangaEntry) {
+            $providerIds[] = $mangaEntry->getProviderId()->toRfc4122();
+        }
+
+        if ($providerIds === []) {
+            return [];
+        }
+
+        $mangas = $this->mangaDexService->getMangasByIds($providerIds);
+
+        return $this->enrichMangaCollectionForUser($mangas, $user);
+    }
+
     private function enrichMangaCollectionForUser(array $mangas, User $user): array
     {
         $providerIds = $this->extractValidProviderIds($mangas);
