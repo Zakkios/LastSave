@@ -112,4 +112,9 @@ class MangaEntryService
             $providerId
         );
     }
+
+    public function findUserMangaEntries(User $user): array
+    {
+        return $this->mangaEntryRepository->findByOwner($user);
+    }
 }
