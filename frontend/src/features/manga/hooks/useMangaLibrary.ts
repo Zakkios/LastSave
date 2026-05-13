@@ -16,8 +16,6 @@ export const useMangaLibrary = () => {
         setItems(data);
       } catch (err) {
         console.error("Failed to fetch manga library:", err);
-        // We set error but keep items empty. 
-        // If 404 because endpoint is missing, we'll just show empty state/error.
         setError("Impossible de charger votre bibliothèque.");
       } finally {
         setLoading(false);
