@@ -39,6 +39,41 @@ class MangaController extends AbstractController
         return $this->json($mangaData);
     }
 
+    #[Route('/library', name: 'app_manga_library', methods: ['GET'])]
+    public function mangaLibrary(): JsonResponse
+    {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            return $this->json([
+                'message' => 'User not authenticated',
+            ], 401);
+        }
+
+        $mangasData = $this->mangaLibraryQueryService->getMangaLibraryForUser($user);
+
+        return $this->json($mangasData);
+    }
+
+    #[Route('/page/{page}', name: 'app_manga_by_page', methods: ['GET'])]
+    public function mangaByPage(int $page): JsonResponse
+    {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            return $this->json([
+                'message' => 'User not authenticated',
+            ], 401);
+        }
+
+        $mangasData = $this->mangaLibraryQueryService->getMangaPageForUser(
+            $page,
+            $user
+        );
+
+        return $this->json($mangasData);
+    }
+
     #[Route('/{id}', name: 'app_manga_by_id', methods: ['GET'])]
     public function mangaById(string $id): JsonResponse
     {
@@ -64,24 +99,5 @@ class MangaController extends AbstractController
         );
 
         return $this->json($mangaData);
-    }
-
-    #[Route('/page/{page}', name: 'app_manga_by_page', methods: ['GET'])]
-    public function mangaByPage(int $page): JsonResponse
-    {
-        $user = $this->getUser();
-
-        if (!$user instanceof User) {
-            return $this->json([
-                'message' => 'User not authenticated',
-            ], 401);
-        }
-
-        $mangasData = $this->mangaLibraryQueryService->getMangaPageForUser(
-            $page,
-            $user
-        );
-
-        return $this->json($mangasData);
     }
 }
