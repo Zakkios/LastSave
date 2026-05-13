@@ -64,9 +64,6 @@ const updateMangaEntry = async (payload: MangaEntryPayload): Promise<void> => {
   }
 };
 
-/**
- * TODO: Backend implementation required for GET /manga/library
- */
 const getMangaLibrary = async (): Promise<MangaShortResponse[]> => {
   try {
     // This endpoint does not exist yet in the backend.
