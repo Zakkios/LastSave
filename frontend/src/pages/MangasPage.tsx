@@ -131,7 +131,7 @@ const MangasPage = () => {
               endMessage={
                 items.length > 0 && (
                   <p className="py-8 text-center text-sm text-zinc-500">
-                    Vous avez tout vu !
+                    Vous avez parcouru toute l’étagère.
                   </p>
                 )
               }
