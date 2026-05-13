@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { 
-  BookOpen, 
-  Layers, 
-  Calendar, 
-  CheckCircle2, 
-  Plus, 
+import {
+  BookOpen,
+  Layers,
+  Calendar,
+  CheckCircle2,
+  Plus,
   Pencil,
   Hash,
-  Info
+  Info,
 } from "lucide-react";
 import Button from "../../../shared/components/Button/Button";
 import StatusBadge from "./StatusBadge/StatusBadge";
@@ -79,8 +79,8 @@ export const MangaCard = ({ manga }: MangaCardProps) => {
 
             <div className="space-y-3">
               <Button
-                variant={libraryStatus.isInLibrary ? "ghost" : "primary"}
-                className="w-full justify-center gap-2 py-6"
+                variant="primary"
+                className="w-full justify-center gap-2"
                 onClick={openModal}
               >
                 {libraryStatus.isInLibrary ? (
@@ -96,15 +96,18 @@ export const MangaCard = ({ manga }: MangaCardProps) => {
                 )}
               </Button>
 
-              {libraryStatus.isInLibrary && libraryStatus.readingStatusLabel && (
-                <div className="flex items-center justify-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900/30 py-3">
-                  <span className="text-xs text-zinc-500 uppercase font-semibold tracking-wider">Statut actuel :</span>
-                  <StatusBadge
-                    label={libraryStatus.readingStatusLabel}
-                    status={libraryStatus.readingStatus!}
-                  />
-                </div>
-              )}
+              {libraryStatus.isInLibrary &&
+                libraryStatus.readingStatusLabel && (
+                  <div className="flex items-center justify-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900/30 py-3">
+                    <span className="text-xs text-zinc-500 uppercase font-semibold tracking-wider">
+                      Statut actuel :
+                    </span>
+                    <StatusBadge
+                      label={libraryStatus.readingStatusLabel}
+                      status={libraryStatus.readingStatus!}
+                    />
+                  </div>
+                )}
             </div>
 
             <Card>
@@ -113,25 +116,33 @@ export const MangaCard = ({ manga }: MangaCardProps) => {
                   <span className="text-zinc-500 flex items-center gap-2">
                     <Calendar className="h-4 w-4" /> Année
                   </span>
-                  <span className="text-zinc-200 font-medium">{manga.publicationYear || "—"}</span>
+                  <span className="text-zinc-200 font-medium">
+                    {manga.publicationYear || "—"}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-zinc-500 flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4" /> Publication
                   </span>
-                  <span className="text-zinc-200 font-medium">{manga.publicationStatus || "—"}</span>
+                  <span className="text-zinc-200 font-medium">
+                    {manga.publicationStatus || "—"}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-zinc-500 flex items-center gap-2">
                     <Layers className="h-4 w-4" /> Tomes
                   </span>
-                  <span className="text-zinc-200 font-medium">{manga.numberOfVolumes || "—"}</span>
+                  <span className="text-zinc-200 font-medium">
+                    {manga.numberOfVolumes || "—"}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-zinc-500 flex items-center gap-2">
                     <Hash className="h-4 w-4" /> Chapitres
                   </span>
-                  <span className="text-zinc-200 font-medium">{manga.numberOfChapters || "—"}</span>
+                  <span className="text-zinc-200 font-medium">
+                    {manga.numberOfChapters || "—"}
+                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -175,7 +186,9 @@ export const MangaCard = ({ manga }: MangaCardProps) => {
                     </span>
                   ))
                 ) : (
-                  <span className="text-zinc-600 italic">Aucun genre listé</span>
+                  <span className="text-zinc-600 italic">
+                    Aucun genre listé
+                  </span>
                 )}
               </div>
             </div>
@@ -195,7 +208,9 @@ export const MangaCard = ({ manga }: MangaCardProps) => {
                     </span>
                   ))
                 ) : (
-                  <span className="text-zinc-600 italic">Aucun thème listé</span>
+                  <span className="text-zinc-600 italic">
+                    Aucun thème listé
+                  </span>
                 )}
               </div>
             </div>
