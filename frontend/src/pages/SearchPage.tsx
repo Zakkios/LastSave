@@ -12,19 +12,21 @@ type SearchTab = "mangas" | "games";
 const SearchPage = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<SearchTab>("mangas");
-  const { query, setQuery, results, fetchMore, hasMore, isSearching, error } = useMangaSearch();
+  const { query, setQuery, results, fetchMore, hasMore, isSearching, error } =
+    useMangaSearch();
 
   const handleClickPreviewCard = (id: string) => {
     navigate(`/manga/${id}`);
   };
 
-  const isEmpty = !isSearching && query.trim().length >= 2 && results.length === 0;
+  const isEmpty =
+    !isSearching && query.trim().length >= 2 && results.length === 0;
   const isInitial = query.trim().length < 2;
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader 
-        title="Recherche" 
+      <PageHeader
+        title="Recherche"
         description="Trouvez vos œuvres préférées sur toutes les plateformes."
       />
 
@@ -100,23 +102,26 @@ const SearchPage = () => {
                 next={fetchMore}
                 hasMore={hasMore}
                 loader={
-                  <div className="w-full max-w-2xl flex mt-3 gap-3 p-3 border border-zinc-800 rounded-lg bg-zinc-900/50 animate-pulse">
-                    <div className="w-16 h-24 shrink-0 rounded bg-zinc-800"></div>
-                    <div className="flex flex-col justify-center flex-1 space-y-2">
-                      <div className="h-4 w-3/4 bg-zinc-800 rounded"></div>
-                      <div className="h-3 w-1/2 bg-zinc-800 rounded"></div>
+                  <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-2">
+                    <div className="flex gap-3 rounded-lg border border-zinc-800 bg-zinc-900/50 p-3 animate-pulse">
+                      <div className="h-24 w-16 shrink-0 rounded bg-zinc-800" />
+
+                      <div className="flex flex-1 flex-col justify-center space-y-2">
+                        <div className="h-4 w-3/4 rounded bg-zinc-800" />
+                        <div className="h-3 w-1/2 rounded bg-zinc-800" />
+                      </div>
                     </div>
                   </div>
                 }
                 endMessage={
                   results.length > 0 && (
                     <p className="py-8 text-center text-sm text-zinc-500">
-                      Fin des résultats MangaDex.
+                      Parfois, il faut souffrir pour savoir
                     </p>
                   )
                 }
               >
-                <div className="flex w-full max-w-2xl flex-col gap-3">
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-2">
                   {results.map((item) => (
                     <button
                       key={item.id}
