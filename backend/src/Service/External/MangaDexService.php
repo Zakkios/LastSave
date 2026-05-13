@@ -62,6 +62,42 @@ class MangaDexService
         return $this->mangaCompleteMapper->fromEntity($mangaData, $author, $coverUrl);
     }
 
+    /**
+     * @param string[] $ids
+     *
+     * @return MangaCompleteDTO[]
+     */
+    public function getMangasByIds(array $ids): array
+    {
+        if ($ids === []) {
+            return [];
+        }
+
+        $mangaData = $this->apiClient->get(self::BASE_URL, '/manga', [
+            'query' => [
+                'ids' => $ids,
+                'includes' => ['cover_art', 'author'],
+            ],
+        ]);
+
+        $mangas = $mangaData['data'] ?? [];
+
+        $mangaDTOs = [];
+
+        foreach ($mangas as $manga) {
+            $coverUrl = $this->getCoverUrlFromRelationship($manga);
+            $author = $this->getAuthorNameFromRelationship($manga);
+
+            $mangaDTOs[] = $this->mangaCompleteMapper->fromEntity(
+                ['data' => $manga],
+                $author,
+                $coverUrl
+            );
+        }
+
+        return $mangaDTOs;
+    }
+
     public function getMangaByPage(int $page): array
     {
         $offset = $page * self::PAGE_LIMIT;
