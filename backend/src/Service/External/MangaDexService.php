@@ -6,18 +6,19 @@ use App\DTO\MangaCompleteDTO;
 use App\Mapper\MangaCompleteMapper;
 use App\Mapper\MangaMapper;
 use App\Service\Http\ApiClient;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class MangaDexService
 {
     private const BASE_URL = 'https://api.mangadex.org';
-    private const COVER_BASE_URL = 'https://uploads.mangadex.org/covers';
     private const AUTOCOMPLETE_LIMIT = 8;
     private const PAGE_LIMIT = 20;
 
     public function __construct(
         private ApiClient $apiClient,
         private MangaMapper $mangaMapper,
-        private MangaCompleteMapper $mangaCompleteMapper
+        private MangaCompleteMapper $mangaCompleteMapper,
+        private UrlGeneratorInterface $urlGenerator
     ) {}
 
     public function getMangaForAutocomplete(string $query, string $page): array
@@ -139,7 +140,18 @@ class MangaDexService
         $coverRelation = $this->getRelationshipByType($relationships, 'cover_art');
         $fileName = $coverRelation['attributes']['fileName'] ?? null;
 
-        return $fileName ? self::COVER_BASE_URL . '/' . $mangaId . '/' . $fileName . '.256.jpg' : '';
+        if (!$fileName || !$mangaId) {
+            return '';
+        }
+
+        return $this->urlGenerator->generate(
+            'app_manga_cover_proxy',
+            [
+                'mangaId'  => $mangaId,
+                'fileName' => $fileName . '.256.jpg',
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
     }
 
     private function getAuthorNameFromRelationship(array $manga): string
