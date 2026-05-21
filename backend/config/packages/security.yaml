@@ -54,6 +54,7 @@ security:
         - { path: ^/token/refresh$, roles: PUBLIC_ACCESS }
         - { path: ^/token/invalidate$, roles: PUBLIC_ACCESS }
         - { path: ^/register$, roles: PUBLIC_ACCESS }
+        - { path: ^/manga/cover/, roles: PUBLIC_ACCESS }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
