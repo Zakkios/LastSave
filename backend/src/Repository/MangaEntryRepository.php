@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\MangaEntry;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\Uuid;
 
@@ -40,7 +41,10 @@ class MangaEntryRepository extends ServiceEntityRepository
             ->andWhere('m.owner = :owner')
             ->andWhere('m.providerId IN (:providerIds)')
             ->setParameter('owner', $user)
-            ->setParameter('providerIds', $providerIds)
+            ->setParameter('providerIds', array_map(
+                static fn (Uuid $providerId): string => $providerId->toBinary(),
+                $providerIds
+            ), ArrayParameterType::BINARY)
             ->getQuery()
             ->getResult();
     }
