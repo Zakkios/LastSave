@@ -1,0 +1,22 @@
+services:
+  database:
+    image: mariadb:11.4.11
+    container_name: lastsave-mariadb
+    restart: unless-stopped
+    env_file:
+      - .env.docker
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${MARIADB_DATABASE}
+      MARIADB_USER: ${MARIADB_USER}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+    ports:
+      - "${MARIADB_PORT}:3306"
+    volumes:
+      - lastsave_mariadb_data:/var/lib/mysql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+
+volumes:
+  lastsave_mariadb_data:
