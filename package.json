@@ -1,6 +1,12 @@
 {
   "scripts": {
     "back": "cd backend && symfony server:start",
-    "front": "cd frontend && npm run dev"
+    "front": "cd frontend && npm run dev",
+    "db:up": "cd docker && docker compose --env-file .env.docker up -d database",
+    "db:down": "cd docker && docker compose --env-file .env.docker down",
+    "db:restart": "npm run db:down && npm run db:up",
+    "db:logs": "cd docker && docker logs -f lastsave-mariadb",
+    "db:shell": "cd docker && docker exec -it lastsave-mariadb sh -c \"mariadb -u\\\"$MARIADB_USER\\\" -p\\\"$MARIADB_PASSWORD\\\" \\\"$MARIADB_DATABASE\\\"\"",
+    "db:reset": "cd docker && docker compose --env-file .env.docker down -v && docker compose --env-file .env.docker up -d database"
   }
 }
