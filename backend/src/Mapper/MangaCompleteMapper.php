@@ -16,6 +16,9 @@ class MangaCompleteMapper
 
         $genres = $this->resolveTagsByGroup($mangaAttributes['tags'] ?? [], 'genre');
         $themes = $this->resolveTagsByGroup($mangaAttributes['tags'] ?? [], 'theme');
+        // MangaDex fills lastChapter / lastVolume with the series' end once it is over.
+        $isSeriesCompleted = ($mangaAttributes['status'] ?? null) === MangaPublicationStatus::completed->value;
+        $finalVolume = $this->toNumber($mangaAttributes['lastVolume'] ?? null);
 
         return new MangaCompleteDTO(
             id: $mangaData['data']['id'],
@@ -35,7 +38,18 @@ class MangaCompleteMapper
             publicationYear: isset($mangaAttributes['year'])
                 ? (string) $mangaAttributes['year']
                 : 'Inconnu',
+            isSeriesCompleted: $isSeriesCompleted,
+            finalChapter: $isSeriesCompleted ? $this->toNumber($mangaAttributes['lastChapter'] ?? null) : null,
+            finalVolume: $isSeriesCompleted && $finalVolume !== null ? (int) $finalVolume : null,
         );
+    }
+
+    // "232" or "12.5" -> number; empty or not a number -> null.
+    private function toNumber(?string $value): ?float
+    {
+        $value = trim((string) $value);
+
+        return is_numeric($value) ? (float) $value : null;
     }
 
     private function resolveTagsByGroup(array $tags, string $group): array

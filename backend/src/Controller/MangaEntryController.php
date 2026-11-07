@@ -50,10 +50,12 @@ class MangaEntryController extends AbstractController
         try {
             $providerId = Uuid::fromString($data['providerId']);
 
+            // Optional: progressUnit ("chapter" | "volume"), lastReadChapter, lastReadVolume.
             $mangaEntry = $this->mangaEntryService->createNewMangaEntry(
                 $user,
                 $providerId,
-                $data['status']
+                $data['status'],
+                $data
             );
         } catch (\DomainException $e) {
             return $this->json([
@@ -112,9 +114,11 @@ class MangaEntryController extends AbstractController
                 ], 404);
             }
 
+            // Optional: progressUnit ("chapter" | "volume"), lastReadChapter, lastReadVolume.
             $this->mangaEntryService->updateMangaEntry(
                 $mangaEntry,
-                $data['status']
+                $data['status'],
+                $data
             );
         } catch (\InvalidArgumentException $e) {
             return $this->json([
@@ -128,6 +132,46 @@ class MangaEntryController extends AbstractController
             'providerId' => $mangaEntry->getProviderId()->toRfc4122(),
             'status' => $mangaEntry->getStatus()->value,
         ], 200);
+    }
+
+    // "+1": one more chapter or volume read; a manga "to read" becomes "reading".
+    #[Route('/manga_entries/{providerId}/advance', name: 'app_manga_entry_advance', methods: ['POST'])]
+    public function advance(string $providerId): JsonResponse
+    {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            return $this->json([
+                'message' => 'User not authenticated',
+            ], 401);
+        }
+
+        try {
+            $mangaId = Uuid::fromString($providerId);
+        } catch (\InvalidArgumentException) {
+            return $this->json([
+                'message' => 'Invalid UUID',
+            ], 400);
+        }
+
+        $mangaEntry = $this->mangaEntryService->findUserEntryForManga($user, $mangaId);
+
+        if (!$mangaEntry) {
+            return $this->json([
+                'message' => 'Manga entry not found',
+            ], 404);
+        }
+
+        $this->mangaEntryService->advanceMangaEntry($mangaEntry);
+        $status = $mangaEntry->getStatus();
+
+        return $this->json([
+            'readingStatus' => $status->value,
+            'readingStatusLabel' => $status->label(),
+            'progressUnit' => $mangaEntry->getProgressUnit()->value,
+            'lastReadChapter' => $mangaEntry->getLastReadChapter(),
+            'lastReadVolume' => $mangaEntry->getLastReadVolume(),
+        ]);
     }
 
     // Removes the manga from the user's library (added by mistake): 204 on success.

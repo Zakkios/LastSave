@@ -91,6 +91,54 @@ class MangaController extends AbstractController
         return $this->json($mangasData);
     }
 
+    // ?ids=<uuid>,<uuid>… (12 at most): latest French chapter of those mangas of the
+    // user's library followed by chapter, for the "N new" badges. Declared before /{id}.
+    #[Route('/latest-chapters', name: 'app_manga_latest_chapters', methods: ['GET'])]
+    public function latestChapters(Request $request): JsonResponse
+    {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            return $this->json([
+                'message' => 'User not authenticated',
+            ], 401);
+        }
+
+        $mangaIds = [];
+
+        foreach (explode(',', (string) $request->query->get('ids', '')) as $id) {
+            if (trim($id) === '') {
+                continue;
+            }
+
+            try {
+                $mangaIds[] = Uuid::fromString(trim($id));
+            } catch (\InvalidArgumentException) {
+                return $this->json([
+                    'message' => 'Invalid UUID',
+                ], 400);
+            }
+        }
+
+        // JsonResponse + (object): an empty result stays a JSON object ({}), not an empty array.
+        return new JsonResponse((object) $this->mangaLibraryQueryService->getLatestFrenchChaptersForUser($user, $mangaIds));
+    }
+
+    // Finished mangas with a new French chapter, to offer putting them back "reading".
+    #[Route('/resumable', name: 'app_manga_resumable', methods: ['GET'])]
+    public function resumable(): JsonResponse
+    {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            return $this->json([
+                'message' => 'User not authenticated',
+            ], 401);
+        }
+
+        return $this->json($this->mangaLibraryQueryService->getResumableMangasForUser($user));
+    }
+
     #[Route('/{id}', name: 'app_manga_by_id', methods: ['GET'])]
     public function mangaById(string $id): JsonResponse
     {

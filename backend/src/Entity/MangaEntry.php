@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Enum\MangaReadingStatus;
+use App\Enum\ProgressUnit;
 use App\Repository\MangaEntryRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
@@ -31,6 +32,18 @@ class MangaEntry
     #[ORM\ManyToOne(inversedBy: 'mangaEntries')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;
+
+    // Reading progress. Both numbers are kept, so switching unit loses nothing;
+    // the unit says which one is shown and moved forward by "+1".
+    #[ORM\Column(enumType: ProgressUnit::class, options: ['default' => 'chapter'])]
+    private ProgressUnit $progressUnit = ProgressUnit::chapter;
+
+    // Decimals allowed: 1094.5 for a special chapter.
+    #[ORM\Column(nullable: true)]
+    private ?float $lastReadChapter = null;
+
+    #[ORM\Column(type: 'smallint', nullable: true, options: ['unsigned' => true])]
+    private ?int $lastReadVolume = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -75,6 +88,42 @@ class MangaEntry
     public function setOwner(?User $owner): static
     {
         $this->owner = $owner;
+
+        return $this;
+    }
+
+    public function getProgressUnit(): ProgressUnit
+    {
+        return $this->progressUnit;
+    }
+
+    public function setProgressUnit(ProgressUnit $progressUnit): static
+    {
+        $this->progressUnit = $progressUnit;
+
+        return $this;
+    }
+
+    public function getLastReadChapter(): ?float
+    {
+        return $this->lastReadChapter;
+    }
+
+    public function setLastReadChapter(?float $lastReadChapter): static
+    {
+        $this->lastReadChapter = $lastReadChapter;
+
+        return $this;
+    }
+
+    public function getLastReadVolume(): ?int
+    {
+        return $this->lastReadVolume;
+    }
+
+    public function setLastReadVolume(?int $lastReadVolume): static
+    {
+        $this->lastReadVolume = $lastReadVolume;
 
         return $this;
     }

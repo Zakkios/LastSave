@@ -7,6 +7,9 @@ use App\Mapper\MangaCompleteMapper;
 use App\Mapper\MangaMapper;
 use App\Service\Http\ApiClient;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpExceptionInterface;
 
 class MangaDexService
 {
@@ -16,12 +19,55 @@ class MangaDexService
     // Most ids MangaDex accepts in a single /manga request.
     private const IDS_LIMIT = 100;
 
+    // Latest French chapter: kept 6 hours, enough for "new chapters" without hitting MangaDex on every page.
+    private const LATEST_CHAPTER_CACHE_TTL = 6 * 3600;
+    // Pause before each uncached request of a batch: MangaDex allows about 5 requests per second.
+    private const RATE_LIMIT_PAUSE_MICROSECONDS = 200_000;
+
     public function __construct(
         private ApiClient $apiClient,
         private MangaMapper $mangaMapper,
         private MangaCompleteMapper $mangaCompleteMapper,
-        private UrlGeneratorInterface $urlGenerator
+        private UrlGeneratorInterface $urlGenerator,
+        private CacheInterface $cache,
     ) {}
+
+    /**
+     * Highest chapter number published in French on MangaDex, null when there is none
+     * (or when MangaDex cannot be reached: "new chapters" are a bonus, never an error).
+     */
+    public function getLatestFrenchChapter(string $mangaId): ?float
+    {
+        try {
+            return $this->cache->get(
+                'mangadex.latest_french_chapter.' . $mangaId,
+                function (ItemInterface $item) use ($mangaId): ?float {
+                    $item->expiresAfter(self::LATEST_CHAPTER_CACHE_TTL);
+                    usleep(self::RATE_LIMIT_PAUSE_MICROSECONDS);
+
+                    $aggregate = $this->apiClient->get(self::BASE_URL, "/manga/{$mangaId}/aggregate", [
+                        'query' => ['translatedLanguage' => ['fr']],
+                    ]);
+
+                    $latest = null;
+
+                    foreach ($aggregate['volumes'] ?? [] as $volume) {
+                        foreach ($volume['chapters'] ?? [] as $chapter) {
+                            $number = $chapter['chapter'] ?? null;
+
+                            if (is_numeric($number) && ($latest === null || (float) $number > $latest)) {
+                                $latest = (float) $number;
+                            }
+                        }
+                    }
+
+                    return $latest;
+                }
+            );
+        } catch (HttpExceptionInterface) {
+            return null;
+        }
+    }
 
     public function getMangaForAutocomplete(string $query, string $page): array
     {
