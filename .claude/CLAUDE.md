@@ -73,7 +73,7 @@ CI : `.github/workflows/ci.yml` (lint, build, audits de sécurité, migrations +
 
 ## Hébergement actuel
 
-- Tout est sur O2Switch, sous https://lastsave.zakkios.fr/ (front + `/api`) : serveur `souris.o2switch.net`, utilisateur `laza6411`, alias SSH `o2switch-lastsave` (clé `~/.ssh/o2switch_lastsave`, l'IP de Zakkios est autorisée dans cPanel).
+- Tout est sur O2Switch, sous https://lastsave.zakkios.fr/ (front + `/api`) : serveur `souris.o2switch.net`, utilisateur `laza6411`, alias SSH `o2switch-lastsave` (`HostName souris.o2switch.net`, clé `~/.ssh/o2switch_lastsave`, l'IP de Zakkios est autorisée dans cPanel). L'alias pointait vers `api-lastsave.zakkios.fr` : depuis la suppression de ce sous-domaine, `npm run deploy` échouait (« Could not resolve hostname »).
 - Sur le serveur : `~/lastsave/versions/<version>/`, lien `~/lastsave/courante` (racine web : `courante/public`), secrets dans `~/lastsave/partage/` (`.env.local`, `jwt/`). Mise en ligne : `npm run deploy`.
 - DNS de `zakkios.fr` géré chez Cloudflare (enregistrement `lastsave` → 109.234.165.143, sans proxy). Certificat Let's Encrypt géré par cPanel.
 - L'ancienne API `api-lastsave.zakkios.fr` (envoi FTP) et l'ancien front sur Cloudflare Workers ont été retirés le 2026-11-07.
