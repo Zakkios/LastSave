@@ -3,8 +3,6 @@
 Reprise du projet le 2026-11-07, après environ 6 mois de pause (dernier commit le 2026-05-23).
 État : partie manga terminée (recherche, fiche, bibliothèque paginée, ajout/modification de statut). Partie jeux à peine commencée. Pas encore de tests.
 
-> ⚠️ La prod tourne encore avec Symfony 7.4.8 (une trentaine d'avis de sécurité, dont plusieurs « high ») et des cookies en `SameSite=None`. C'est corrigé dans le code mais pas déployé. Choix de Zakkios (2026-11-07) : pas de correctif provisoire, l'appli n'a qu'un utilisateur ; on passe directement à l'hébergement sur un seul domaine (étape 4), avant la partie jeux.
->
 > ⚠️ Failles PHP « PHP2Shell » (CVE-2026-109618 et CVE-2026-109619, exécution de code à distance, publiées le 2026-10-21) : toutes les versions de PHP 5.4 à 8.5.11 sont touchées, corrigées dans 8.5.12 / 8.4.27. La prod est en 8.5.12 (web et CLI) : pas exposée. Le PHP local (8.5.5) est vulnérable.
 
 ## Étape 0 — Contexte Claude ✅
@@ -38,7 +36,7 @@ Reprise du projet le 2026-11-07, après environ 6 mois de pause (dernier commit 
 - [ ] Plus tard, une par une : react-router 8, TypeScript 7, ESLint 10
 - [ ] Garder `@types/node` aligné sur la version de Node utilisée (24), pas sur la dernière
 
-## Étape 4 — Un seul domaine sur O2Switch + déploiement (prioritaire)
+## Étape 4 — Un seul domaine sur O2Switch + déploiement ✅
 
 Objectif : tout sur O2Switch sous `lastsave.zakkios.fr` — plus de sous-domaine `api-lastsave`, plus de Cloudflare — avec le même modèle que `dev-irremplacable` : le front compilé dans `public/` de Symfony, `/api` pour l'API, des versions installées côte à côte et un lien `courante`.
 
@@ -49,11 +47,14 @@ Déploiement lancé depuis le PC de Zakkios en SSH (son IP est autorisée chez O
 - [x] Migrations en base de prod vérifiées (table `doctrine_migration_versions`) : uniquement `Version20260522084558`, identique au dépôt
 - [x] Code « un seul domaine » : routes sous `/api`, `.htaccess` d'aiguillage, URLs de couvertures relatives, relais `/api` dans Vite, `SameSite=Lax` partout, bundle CORS retiré, `VITE_API_URL` et `wrangler.jsonc` supprimés. Testé en local à travers Vite
 - [x] Script de déploiement calqué sur `dev-irremplacable` (`deploiement/`, `npm run deploy`) : commit poussé + CI verte exigés, paquet back + front compilé (sans secret), envoi, `composer install` sur le serveur, migrations, bascule du lien `courante`, 3 versions gardées, `npm run deploy:retour`. Paquet testé en local
-- [ ] Mise en place unique sur le serveur : `~/lastsave/{versions,partage}`, `partage/.env.local` et clés JWT copiés depuis `~/api-lastsave.zakkios.fr/`
-- [ ] cPanel : ajouter `lastsave.zakkios.fr` avec la racine web `~/lastsave/courante/public`
-- [ ] Premier déploiement, testé avant de toucher au DNS
-- [ ] DNS : faire pointer `lastsave.zakkios.fr` vers O2Switch (109.234.165.143), certificat SSL, puis supprimer le Worker Cloudflare
-- [ ] Ménage : supprimer le sous-domaine `api-lastsave` dans cPanel et l'ancien dossier `~/api-lastsave.zakkios.fr/`
+- [x] Mise en place unique sur le serveur : `~/lastsave/{versions,partage}`, `partage/.env.local` et `partage/jwt/` copiés depuis `~/api-lastsave.zakkios.fr/` (sans `CORS_ALLOW_ORIGIN`), contrôle `preparer` OK
+- DNS de `zakkios.fr` géré chez **Cloudflare** (NS `kai` / `sloan.ns.cloudflare.com`) ; `lastsave.zakkios.fr` y pointe aujourd'hui sur le Worker
+- [x] cPanel : `lastsave.zakkios.fr` ajouté, racine web `~/lastsave/courante/public`
+- [x] Premier déploiement (2026-11-07, version `20261107-105852-9487ae6`) : front, routes React, assets, `/api` (401 sans connexion, login refusé proprement), couvertures, `.env` inaccessible (403)
+- [x] DNS : `lastsave.zakkios.fr` pointe vers O2Switch (109.234.165.143, sans proxy Cloudflare) ; certificat Let's Encrypt émis par cPanel (renouvelé automatiquement)
+- [x] Appli en ligne testée par Zakkios dans le navigateur
+- [x] Ménage serveur : domaine `api-lastsave` retiré de cPanel, ancien dossier `~/api-lastsave.zakkios.fr/` et dossier `~/lastsave/courante-creee-par-cpanel-*` supprimés
+- [x] Ménage Cloudflare : enregistrement DNS `api-lastsave` et Worker de l'ancien front supprimés
 - [ ] Si l'IP de la box change : la remettre dans l'autorisation SSH de cPanel
 
 ## Étape 5 — Partie jeux vidéo (IGDB)

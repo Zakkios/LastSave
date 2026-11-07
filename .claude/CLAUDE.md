@@ -73,8 +73,9 @@ CI : `.github/workflows/ci.yml` (lint, build, audits de sécurité, migrations +
 
 ## Hébergement actuel
 
-- **Frontend** : https://lastsave.zakkios.fr/ sur Cloudflare Workers (ancienne version, appelle encore l'API sur le sous-domaine).
-- **Backend** : https://api-lastsave.zakkios.fr/ sur O2Switch (`souris.o2switch.net`, utilisateur `laza6411`, alias SSH `o2switch-lastsave`), envoyé à la main en FTP dans `~/api-lastsave.zakkios.fr/`.
-- Cible (roadmap, étape 4) : tout sur O2Switch sous `lastsave.zakkios.fr`, sans sous-domaine ni Cloudflare, déployé en SSH depuis le PC de Zakkios (son IP est autorisée) avec des versions + un lien `courante`, comme `dev-irremplacable`.
+- Tout est sur O2Switch, sous https://lastsave.zakkios.fr/ (front + `/api`) : serveur `souris.o2switch.net`, utilisateur `laza6411`, alias SSH `o2switch-lastsave` (clé `~/.ssh/o2switch_lastsave`, l'IP de Zakkios est autorisée dans cPanel).
+- Sur le serveur : `~/lastsave/versions/<version>/`, lien `~/lastsave/courante` (racine web : `courante/public`), secrets dans `~/lastsave/partage/` (`.env.local`, `jwt/`). Mise en ligne : `npm run deploy`.
+- DNS de `zakkios.fr` géré chez Cloudflare (enregistrement `lastsave` → 109.234.165.143, sans proxy). Certificat Let's Encrypt géré par cPanel.
+- L'ancienne API `api-lastsave.zakkios.fr` (envoi FTP) et l'ancien front sur Cloudflare Workers ont été retirés le 2026-11-07.
 
 @roadmap.md
