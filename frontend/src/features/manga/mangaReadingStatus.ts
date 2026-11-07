@@ -19,5 +19,6 @@ export const getMangaReadingStatusLabel = (status: StatusVariant): string => {
 };
 
 export const isMangaReadingStatus = (value: string): value is StatusVariant => {
-  return value in mangaReadingStatusLabels;
+  // hasOwn plutôt que `in` : « toString » ou « constructor » ne sont pas des statuts.
+  return Object.hasOwn(mangaReadingStatusLabels, value);
 };

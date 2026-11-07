@@ -1,126 +1,169 @@
-import { Library, Gamepad2, PlayCircle, Clock, CheckCircle2 } from "lucide-react";
+import {
+  BarChart3,
+  CalendarClock,
+  Gamepad2,
+  History,
+  Library,
+  PlayCircle,
+  Plus,
+} from "lucide-react";
 import PageHeader from "../shared/components/PageHeader";
-import StatCard from "../shared/components/StatCard";
-import { Card, CardHeader, CardTitle, CardContent } from "../shared/components/Card/Card";
-import EmptyState from "../shared/components/EmptyState";
+import ButtonLink from "../shared/components/Button/ButtonLink";
+import DashboardSection from "../features/dashboard/components/DashboardSection";
+import InProgressShelf from "../features/dashboard/components/InProgressShelf";
+import CollectionOverviewCard, {
+  CollectionOverviewSkeleton,
+  type StatusSegment,
+} from "../features/dashboard/components/CollectionOverviewCard";
+import RecentActivityList from "../features/dashboard/components/RecentActivityList";
+import UpcomingGamesList from "../features/dashboard/components/UpcomingGamesList";
+import { useLibraryStats } from "../features/library/hooks/useLibraryStats";
+import { useRecentEntries } from "../features/library/hooks/useRecentEntries";
 import { useMangaLibrary } from "../features/manga/hooks/useMangaLibrary";
+import { useGameLibrary } from "../features/game/hooks/useGameLibrary";
+import { useUpcomingGames } from "../features/game/hooks/useUpcomingGames";
+import { mangaReadingStatusLabels } from "../features/manga/mangaReadingStatus";
+import { gameStatusLabels } from "../features/game/gameStatus";
+import type { CollectionStats } from "../features/library/types";
 
+// Statuts dans l'ordre des libellés (à faire, en cours, terminé, abandonné).
+const toSegments = <Status extends StatusSegment["status"]>(
+  labels: Record<Status, string>,
+  stats: CollectionStats<Status>,
+): StatusSegment[] =>
+  (Object.keys(labels) as Status[]).map((status) => ({
+    status,
+    label: labels[status],
+    count: stats.byStatus[status] ?? 0,
+  }));
+
+// Page d'accueil, par ordre d'utilité : reprendre ce qui est en cours, ajouter,
+// voir sa collection d'un coup d'œil, puis l'activité et les sorties à venir.
 const DashboardPage = () => {
-  const { items, loading } = useMangaLibrary();
-
-  // Basic stats derived from library items
-  const readingMangas = items.filter(m => m.readingStatus === "reading").length;
-  const completedMangas = items.filter(m => m.readingStatus === "completed").length;
-  const totalMangas = items.length;
+  const stats = useLibraryStats();
+  const readingMangas = useMangaLibrary("reading");
+  const playingGames = useGameLibrary("playing");
+  const recentEntries = useRecentEntries();
+  const upcomingGames = useUpcomingGames();
 
   return (
-    <div className="space-y-8">
-      <PageHeader 
-        title="Dashboard" 
-        description="Bienvenue sur votre espace personnel LastSave."
+    <div className="space-y-10">
+      <PageHeader
+        title="Accueil"
+        description="Reprenez où vous en étiez et gardez un œil sur votre collection."
+        action={
+          <>
+            <ButtonLink to="/search?tab=mangas" variant="tonal" size="sm">
+              <Plus className="h-4 w-4" />
+              Ajouter un manga
+            </ButtonLink>
+            <ButtonLink to="/search?tab=games" variant="tonal" size="sm">
+              <Plus className="h-4 w-4" />
+              Ajouter un jeu
+            </ButtonLink>
+          </>
+        }
       />
-      
-      {/* Section Statistiques */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard 
-          title="Mangas en cours" 
-          value={loading ? "..." : readingMangas} 
-          icon={<Library className="h-4 w-4" />}
-        />
-        <StatCard 
-          title="Jeux en cours" 
-          value="—" 
-          description="Bientôt disponible"
-          icon={<Gamepad2 className="h-4 w-4" />}
-        />
-        <StatCard 
-          title="Mangas terminés" 
-          value={loading ? "..." : completedMangas} 
-          icon={<CheckCircle2 className="h-4 w-4" />}
-        />
-        <StatCard 
-          title="Total collection" 
-          value={loading ? "..." : totalMangas} 
-          icon={<Clock className="h-4 w-4" />}
-        />
-      </div>
 
-      <div className="grid gap-8 lg:grid-cols-3">
-        {/* Colonne Gauche/Milieu : Contenu en cours */}
-        <div className="lg:col-span-2 space-y-6">
-          <section className="space-y-4">
-            <h3 className="flex items-center gap-2 text-lg font-semibold text-zinc-50">
-              <PlayCircle className="h-5 w-5 text-indigo-500" />
-              Continuer
-            </h3>
-            
-            {readingMangas > 0 ? (
-              <div className="grid gap-4 sm:grid-cols-2">
-                {items
-                  .filter(m => m.readingStatus === "reading")
-                  .slice(0, 4)
-                  .map(manga => (
-                    <Card key={manga.id} className="hover:border-zinc-700 transition-colors">
-                      <CardContent className="p-4 flex gap-4">
-                        <div className="h-20 w-14 shrink-0 overflow-hidden rounded bg-zinc-800">
-                          {manga.coverUrl && (
-                            <img src={manga.coverUrl} alt={manga.title} className="h-full w-full object-cover" />
-                          )}
-                        </div>
-                        <div className="flex flex-col justify-center min-w-0">
-                          <h4 className="font-bold text-zinc-100 truncate">{manga.title}</h4>
-                          <p className="text-sm text-zinc-500 truncate">{manga.author}</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-              </div>
-            ) : (
-              <EmptyState 
-                title="Rien en cours" 
-                description="Vous n'avez aucun manga ou jeu marqué comme 'en cours'."
-              />
-            )}
-          </section>
-
-          {/* TODO: Futur endpoint backend GET /activities */}
-          <section className="space-y-4">
-            <h3 className="flex items-center gap-2 text-lg font-semibold text-zinc-50">
-              <Clock className="h-5 w-5 text-emerald-500" />
-              Activité récente
-            </h3>
-            <Card>
-              <CardContent className="py-12 text-center text-zinc-500 italic">
-                L'historique de vos activités sera affiché ici.
-              </CardContent>
-            </Card>
-          </section>
-        </div>
-
-        {/* Colonne Droite : Widgets Secondaires */}
+      <DashboardSection
+        title="En cours"
+        icon={<PlayCircle className="h-5 w-5 text-indigo-500" />}
+      >
         <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm uppercase tracking-wider text-zinc-500">
-                Prochaines sorties
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-zinc-400 italic">
-                Bientôt : suivez les dates de sortie de vos séries préférées.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-indigo-500/5 border-indigo-500/20">
-            <CardContent className="p-6">
-              <h4 className="font-bold text-indigo-400">Astuce LastSave</h4>
-              <p className="mt-2 text-sm text-zinc-400 leading-relaxed">
-                Utilisez la recherche pour ajouter rapidement des mangas à votre bibliothèque et suivre votre progression !
-              </p>
-            </CardContent>
-          </Card>
+          <InProgressShelf
+            title="Mangas"
+            icon={<Library className="h-4 w-4" />}
+            count={stats.data?.mangas.byStatus.reading ?? null}
+            items={readingMangas.items.map((manga) => ({
+              key: manga.id,
+              title: manga.title,
+              coverUrl: manga.coverUrl || null,
+              href: `/manga/${manga.id}`,
+            }))}
+            loading={readingMangas.loading}
+            error={readingMangas.error}
+            seeAllHref="/mangas?status=reading"
+            emptyMessage="Aucun manga en cours de lecture."
+            emptyAction={{ label: "Trouver un manga", href: "/search?tab=mangas" }}
+            placeholderIcon={<Library className="h-8 w-8" />}
+          />
+          <InProgressShelf
+            title="Jeux"
+            icon={<Gamepad2 className="h-4 w-4" />}
+            count={stats.data?.games.byStatus.playing ?? null}
+            items={playingGames.items.map((game) => ({
+              key: String(game.id),
+              title: game.title,
+              coverUrl: game.coverUrl,
+              href: `/game/${game.id}`,
+            }))}
+            loading={playingGames.loading}
+            error={playingGames.error}
+            seeAllHref="/games?status=playing"
+            emptyMessage="Aucun jeu en cours."
+            emptyAction={{ label: "Trouver un jeu", href: "/search?tab=games" }}
+            placeholderIcon={<Gamepad2 className="h-8 w-8" />}
+          />
         </div>
+      </DashboardSection>
+
+      <DashboardSection
+        title="Ma collection"
+        icon={<BarChart3 className="h-5 w-5 text-indigo-500" />}
+      >
+        {stats.error ? (
+          <p className="text-sm text-red-400">{stats.error}</p>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2">
+            {stats.data ? (
+              <>
+                <CollectionOverviewCard
+                  title="Mangas"
+                  icon={<Library className="h-4 w-4" />}
+                  libraryHref="/mangas"
+                  total={stats.data.mangas.total}
+                  segments={toSegments(mangaReadingStatusLabels, stats.data.mangas)}
+                />
+                <CollectionOverviewCard
+                  title="Jeux"
+                  icon={<Gamepad2 className="h-4 w-4" />}
+                  libraryHref="/games"
+                  total={stats.data.games.total}
+                  segments={toSegments(gameStatusLabels, stats.data.games)}
+                />
+              </>
+            ) : (
+              <>
+                <CollectionOverviewSkeleton />
+                <CollectionOverviewSkeleton />
+              </>
+            )}
+          </div>
+        )}
+      </DashboardSection>
+
+      <div className="grid gap-10 xl:grid-cols-2">
+        <DashboardSection
+          title="Dernières modifications"
+          icon={<History className="h-5 w-5 text-indigo-500" />}
+        >
+          <RecentActivityList
+            entries={recentEntries.data ?? []}
+            loading={recentEntries.loading}
+            error={recentEntries.error}
+          />
+        </DashboardSection>
+
+        <DashboardSection
+          title="Jeux à venir"
+          icon={<CalendarClock className="h-5 w-5 text-indigo-500" />}
+        >
+          <UpcomingGamesList
+            games={upcomingGames.data ?? []}
+            loading={upcomingGames.loading}
+            error={upcomingGames.error}
+          />
+        </DashboardSection>
       </div>
     </div>
   );

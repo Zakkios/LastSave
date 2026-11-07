@@ -2,6 +2,7 @@ import http from "../../services/http";
 import type {
   MangaCompleteResponse,
   MangaEntryPayload,
+  MangaReadingStatus,
   MangaShortResponse,
 } from "./types";
 
@@ -64,9 +65,16 @@ const updateMangaEntry = async (payload: MangaEntryPayload): Promise<void> => {
   }
 };
 
-const getMangaLibrary = async (page: number): Promise<MangaShortResponse[]> => {
+// `status` : ne garder que les mangas de ce statut (filtré par le back).
+const getMangaLibrary = async (
+  page: number,
+  status: MangaReadingStatus | null = null,
+): Promise<MangaShortResponse[]> => {
   try {
-    const response = await http.get<MangaShortResponse[]>(`/manga/library/page/${page}`);
+    const response = await http.get<MangaShortResponse[]>(
+      `/manga/library/page/${page}`,
+      { params: status ? { status } : undefined },
+    );
     return response.data;
   } catch (error) {
     console.error("Error calling manga library API:", error);

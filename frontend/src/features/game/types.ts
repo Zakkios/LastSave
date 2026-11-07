@@ -24,6 +24,8 @@ export interface GameShortResponse extends GameLibraryStatus {
   // Note IGDB de 0 à 100.
   rating: number | null;
   platforms: string[];
+  // Première sortie, « AAAA-MM-JJ » (UTC) ; null si IGDB n'en connaît pas.
+  releaseDate: string | null;
 }
 
 // GameCompleteDTO côté back.
