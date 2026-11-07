@@ -57,7 +57,7 @@ Depuis la racine :
 
 Frontend (`frontend/`) : `npm run dev`, `npm run lint`, `npm run build` (inclut `tsc -b`).
 
-Backend (`backend/`) : sur le PC de Zakkios, PHP 8.5 est dans `C:\php`. Si `symfony server:start` affiche « no PHP binaries detected », c'est que `C:\php` manque au PATH. Le mode démon (`symfony server:start -d`) échoue sous Windows (fichier de log verrouillé) : lancer le serveur au premier plan. Passer par la CLI Symfony :
+Backend (`backend/`) : sur le PC de Zakkios, PHP 8.5 est installé avec Scoop (`scoop update php`) ; sa configuration est dans `~/scoop/persist/php/cli/php.ini`, chargée grâce à la variable `PHP_INI_SCAN_DIR` posée par Scoop (un terminal ouvert avant l'installation ne l'a pas : le relancer). Le mode démon (`symfony server:start -d`) échoue sous Windows (fichier de log verrouillé) : lancer le serveur au premier plan. Passer par la CLI Symfony :
 - `symfony composer install`
 - `symfony console doctrine:migrations:diff` puis `symfony console doctrine:migrations:migrate`
 - `symfony console debug:router`

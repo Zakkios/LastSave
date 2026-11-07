@@ -15,8 +15,9 @@ Reprise du projet le 2026-11-07, après environ 6 mois de pause (dernier commit 
 - [x] `docker/.env.docker` et `backend/.env.local` créés (secrets de dev aléatoires), clés JWT générées
 - [x] Parcours API vérifié en local : inscription, connexion, `/me`, recherche MangaDex, refresh, déconnexion
 - [x] `IGDB_CLIENT_ID` / `IGDB_CLIENT_SECRET` renseignés et vérifiés (jeton Twitch + requête IGDB via `/game/random`)
-- [x] PHP local mis à jour en 8.5.12 (zip officiel vérifié par SHA-256, même `php.ini`, mêmes extensions) ; ancienne version gardée dans `C:\php-8.5.5-sauvegarde`. PATH Windows corrigé : `C:\php` à la place de l'entrée morte `C:\Program Files (x86)\PHP`
-- [ ] Zakkios : tester le parcours manga dans le navigateur
+- [x] PHP local en 8.5.12, désormais installé avec Scoop (`scoop update php` pour les mises à jour) ; configuration reprise de l'ancien `php.ini` (mêmes 39 extensions) dans `~/scoop/persist/php/cli/php.ini`. PATH Windows nettoyé (entrées `C:\Program Files (x86)\PHP` et `C:\php` retirées)
+- [ ] Zakkios : supprimer les anciens dossiers `C:\php` et `C:\php-8.5.5-sauvegarde` quand il le souhaite
+- [x] Parcours manga testé par Zakkios dans le navigateur (en prod)
 - [x] Nettoyages : ligne parasite de `backend/.gitignore`, `DATABASE_URL` par défaut en MariaDB, route morte `/token/logout` + règle `/token/invalidate`, README Vite remplacé par un README racine
 - [x] Sécurité : cookies d'auth en `SameSite=Lax` (paramètre `auth.cookie.samesite`)
 
