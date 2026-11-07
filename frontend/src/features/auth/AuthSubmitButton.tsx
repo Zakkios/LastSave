@@ -20,7 +20,7 @@ const AuthSubmitButton = ({
         size="sm"
         type="submit"
         disabled={isSubmitting}
-        className="w-full py-3"
+        className="h-11 w-full"
         {...props}
       >
         {isSubmitting ? submittingLabel : children}

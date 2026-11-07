@@ -22,10 +22,10 @@ const AuthTextField = ({
         id={id}
         aria-invalid={Boolean(error)}
         aria-describedby={error ? `${id}-error` : undefined}
-        className={`h-11 w-full rounded-md border bg-zinc-950/70 px-3 text-sm text-zinc-50 outline-none transition placeholder:text-zinc-500 focus:ring-2 focus:ring-emerald-400/35 ${
+        className={`h-11 w-full rounded-md border bg-zinc-950/70 px-3 text-sm text-zinc-50 outline-none transition placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-400/35 ${
           error
             ? "border-red-400/70 focus:border-red-300"
-            : "border-zinc-700 focus:border-emerald-300"
+            : "border-zinc-700 focus:border-indigo-400"
         } ${className}`}
         {...props}
       />

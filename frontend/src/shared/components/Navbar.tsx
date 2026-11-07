@@ -1,5 +1,4 @@
-import { Link } from "react-router";
-import Button from "./Button/Button";
+import ButtonLink from "./Button/ButtonLink";
 
 const Navbar = () => {
   return (
@@ -7,12 +6,12 @@ const Navbar = () => {
       <h1 className="md:text-2xl text-lg font-bold text-zinc-50">LastSave</h1>
 
       <div className="flex gap-3">
-        <Link to="/login">
-          <Button variant="ghost">Connexion</Button>
-        </Link>
-        <Link to="/register">
-          <Button variant="primary">Inscription</Button>
-        </Link>
+        <ButtonLink to="/login" variant="ghost">
+          Connexion
+        </ButtonLink>
+        <ButtonLink to="/register" variant="primary">
+          Inscription
+        </ButtonLink>
       </div>
     </nav>
   );

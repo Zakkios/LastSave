@@ -1,4 +1,4 @@
-import { sizeClasses, variantClasses } from "./button.styles";
+import { getButtonClassName } from "./button.styles";
 import type { ButtonProps } from "./button.types";
 
 const Button = ({
@@ -12,14 +12,7 @@ const Button = ({
   return (
     <button
       type={type}
-      className={`
-        inline-flex items-center justify-center rounded-md font-medium
-        transition-colors disabled:cursor-not-allowed disabled:opacity-50
-        cursor-pointer
-        ${variantClasses[variant]}
-        ${sizeClasses[size]}
-        ${className}
-      `}
+      className={getButtonClassName(variant, size, className)}
       {...props}
     >
       {children}

@@ -30,9 +30,9 @@ const AuthPageLayout = ({
           <div className="relative">
             <div
               aria-hidden="true"
-              className="absolute -left-5 top-20 h-44 w-px bg-linear-to-b from-transparent via-emerald-200/60 to-transparent"
+              className="absolute -left-5 top-20 h-44 w-px bg-linear-to-b from-transparent via-indigo-300/60 to-transparent"
             />
-            <p className="text-sm font-medium uppercase tracking-[0.18em] text-emerald-300">
+            <p className="text-sm font-medium uppercase tracking-[0.18em] text-indigo-300">
               {eyebrow}
             </p>
             <h1 className="mt-4 max-w-lg text-4xl font-semibold leading-tight text-zinc-50 sm:text-5xl">
@@ -44,7 +44,7 @@ const AuthPageLayout = ({
             <ul className="mt-8 space-y-3 text-sm text-zinc-300">
               {highlights.map((highlight) => (
                 <li className="flex items-center gap-3" key={highlight}>
-                  <span className="h-2 w-2 rounded-sm bg-emerald-300" />
+                  <span className="h-2 w-2 rounded-sm bg-indigo-400" />
                   {highlight}
                 </li>
               ))}
@@ -58,7 +58,7 @@ const AuthPageLayout = ({
         >
           <div
             aria-hidden="true"
-            className="absolute inset-x-6 top-0 h-px bg-linear-to-r from-transparent via-emerald-200/70 to-transparent"
+            className="absolute inset-x-6 top-0 h-px bg-linear-to-r from-transparent via-indigo-300/70 to-transparent"
           />
           <div className="mb-7">
             <h2 className="text-2xl font-semibold text-zinc-50">{formTitle}</h2>

@@ -22,7 +22,7 @@ const LoginPage = () => {
           Pas encore de compte ?{" "}
           <Link
             to="/register"
-            className="font-medium text-emerald-300 transition hover:text-emerald-200"
+            className="font-medium text-indigo-300 transition hover:text-indigo-200"
           >
             Créer un compte
           </Link>

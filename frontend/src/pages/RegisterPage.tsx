@@ -17,7 +17,7 @@ const RegisterPage = () => {
           Déjà inscrit ?{" "}
           <Link
             to="/login"
-            className="font-medium text-emerald-300 transition hover:text-emerald-200"
+            className="font-medium text-indigo-300 transition hover:text-indigo-200"
           >
             Se connecter
           </Link>

@@ -3,6 +3,7 @@ import { ChevronLeft, Loader2, AlertCircle } from "lucide-react";
 import { MangaCard } from "../features/manga/components/MangaCard";
 import { useMangaDetail } from "../features/manga/hooks/useMangaDetail";
 import { Card, CardContent } from "../shared/components/Card/Card";
+import ButtonLink from "../shared/components/Button/ButtonLink";
 
 const MangaDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -35,9 +36,9 @@ const MangaDetailPage = () => {
               <h3 className="text-lg font-bold text-zinc-50">Une erreur est survenue</h3>
               <p className="text-red-400">{error}</p>
             </div>
-            <Link to="/search?tab=mangas" className="mt-4 rounded-lg bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-50 hover:bg-zinc-700">
+            <ButtonLink to="/search?tab=mangas" variant="secondary" size="sm" className="mt-4">
               Retourner à la recherche
-            </Link>
+            </ButtonLink>
           </CardContent>
         </Card>
       )}

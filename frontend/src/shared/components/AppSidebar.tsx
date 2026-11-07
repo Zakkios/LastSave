@@ -8,12 +8,10 @@ import {
   LogOut,
   Gamepad,
 } from "lucide-react";
-import { useAuth } from "../../features/auth/hooks/useAuth";
 import useLogout from "../../features/auth/hooks/useLogout";
-import Button from "./Button/Button";
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Accueil", href: "/dashboard", icon: LayoutDashboard },
   { name: "Mangas", href: "/mangas", icon: Library },
   { name: "Jeux", href: "/games", icon: Gamepad2 },
   { name: "Recherche", href: "/search", icon: Search },
@@ -21,7 +19,6 @@ const navigation = [
 ];
 
 const AppSidebar = () => {
-  const { user } = useAuth();
   const { logout } = useLogout();
 
   return (
@@ -56,25 +53,15 @@ const AppSidebar = () => {
       </nav>
 
       <div className="border-t border-zinc-800 p-4">
-        <div className="flex items-center gap-3 px-2 py-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white">
-            {user?.username?.[0]?.toUpperCase() || "U"}
-          </div>
-          <div className="flex-1 overflow-hidden">
-            <p className="truncate text-sm font-medium text-zinc-50">
-              {user?.username || "Utilisateur"}
-            </p>
-          </div>
-        </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="justify-start mt-2 flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-400 transition-colors hover:bg-zinc-900 hover:text-red-400"
+        {/* Comme les liens du menu, mais rose au survol : on quitte l'appli. */}
+        <button
+          type="button"
+          className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-400 transition-colors hover:bg-rose-500/10 hover:text-rose-400"
           onClick={logout}
         >
           <LogOut className="h-5 w-5" />
           Déconnexion
-        </Button>
+        </button>
       </div>
     </aside>
   );

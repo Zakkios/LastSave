@@ -23,16 +23,15 @@ interface GameCardProps {
 interface TagListProps {
   items: string[];
   emptyLabel: string;
-  hoverClassName: string;
 }
 
-const TagList = ({ items, emptyLabel, hoverClassName }: TagListProps) => (
+const TagList = ({ items, emptyLabel }: TagListProps) => (
   <div className="flex flex-wrap gap-2">
     {items.length > 0 ? (
       items.map((item) => (
         <span
           key={item}
-          className={`rounded-full border border-zinc-800 bg-zinc-900/50 px-3 py-1 text-sm text-zinc-300 transition-colors ${hoverClassName}`}
+          className="rounded-full border border-zinc-800 bg-zinc-900/50 px-3 py-1 text-sm text-zinc-300 transition-colors hover:border-indigo-500/50"
         >
           {item}
         </span>
@@ -86,7 +85,7 @@ export const GameCard = ({ game }: GameCardProps) => {
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
         {/* Colonne Gauche : Couverture et Actions Rapides */}
         <div className="lg:col-span-4 xl:col-span-3">
-          <div className="sticky top-24 space-y-6">
+          <div className="sticky top-24 space-y-6 lg:top-8">
             <Card className="overflow-hidden">
               <div className="aspect-3/4 w-full bg-zinc-800">
                 {game.coverUrl ? (
@@ -164,10 +163,10 @@ export const GameCard = ({ game }: GameCardProps) => {
         {/* Colonne Droite : Informations Détaillées */}
         <div className="lg:col-span-8 xl:col-span-9 space-y-8">
           <div className="space-y-2">
-            <h1 className="text-4xl font-extrabold tracking-tight text-zinc-50 lg:text-5xl">
+            <h1 className="text-3xl font-bold tracking-tight text-zinc-50 lg:text-4xl">
               {game.title}
             </h1>
-            <p className="text-xl text-indigo-400 font-medium">
+            <p className="text-lg text-indigo-400 font-medium">
               {game.developer || "Développeur inconnu"}
             </p>
           </div>
@@ -177,7 +176,7 @@ export const GameCard = ({ game }: GameCardProps) => {
               <Info className="h-5 w-5 text-indigo-500" />
               Résumé
             </h2>
-            <p className="text-zinc-400 leading-relaxed text-lg max-w-none">
+            <p className="max-w-prose whitespace-pre-line leading-relaxed text-zinc-400">
               {game.summary || "Aucun résumé disponible."}
             </p>
           </div>
@@ -190,7 +189,6 @@ export const GameCard = ({ game }: GameCardProps) => {
               <TagList
                 items={game.genres}
                 emptyLabel="Aucun genre listé"
-                hoverClassName="hover:border-indigo-500/50"
               />
             </div>
 
@@ -201,7 +199,6 @@ export const GameCard = ({ game }: GameCardProps) => {
               <TagList
                 items={game.themes}
                 emptyLabel="Aucun thème listé"
-                hoverClassName="hover:border-emerald-500/50"
               />
             </div>
 
@@ -212,7 +209,6 @@ export const GameCard = ({ game }: GameCardProps) => {
               <TagList
                 items={game.platforms}
                 emptyLabel="Aucune plateforme listée"
-                hoverClassName="hover:border-sky-500/50"
               />
             </div>
           </div>

@@ -50,7 +50,7 @@ export const GamePreviewCard = ({ game }: GamePreviewCardProps) => {
 
         <div className="flex flex-col items-end gap-2 shrink-0">
           {game.rating !== null && (
-            <div className="flex items-center gap-1 text-emerald-400 text-sm font-bold">
+            <div className="flex items-center gap-1 text-amber-400 text-sm font-bold">
               <Star className="h-3 w-3 fill-current" />
               {game.rating}%
             </div>

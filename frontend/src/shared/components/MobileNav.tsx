@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Accueil", href: "/dashboard", icon: LayoutDashboard },
   { name: "Mangas", href: "/mangas", icon: Library },
   { name: "Jeux", href: "/games", icon: Gamepad2 },
   { name: "Recherche", href: "/search", icon: Search },

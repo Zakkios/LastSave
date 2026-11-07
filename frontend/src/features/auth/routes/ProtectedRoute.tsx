@@ -1,6 +1,8 @@
-import { Link, Navigate, Outlet, useLocation } from "react-router";
+import { Navigate, Outlet, useLocation } from "react-router";
 import { useAuth } from "../hooks/useAuth";
 import AuthRouteStatus from "../AuthRouteStatus";
+import Button from "../../../shared/components/Button/Button";
+import ButtonLink from "../../../shared/components/Button/ButtonLink";
 
 const ProtectedRoute = () => {
   const location = useLocation();
@@ -22,19 +24,17 @@ const ProtectedRoute = () => {
         message={error ?? "Impossible de vérifier votre session."}
         action={
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-            <button
-              className="h-10 rounded-md bg-emerald-400 px-4 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-300"
+            <Button
+              variant="primary"
+              size="sm"
+              className="h-10"
               onClick={() => void refreshUser()}
-              type="button"
             >
               Réessayer
-            </button>
-            <Link
-              className="inline-flex h-10 items-center justify-center rounded-md border border-white/10 px-4 text-sm font-semibold text-zinc-200 transition hover:border-emerald-300/40 hover:text-emerald-200"
-              to="/login"
-            >
+            </Button>
+            <ButtonLink to="/login" variant="secondary" size="sm" className="h-10">
               Connexion
-            </Link>
+            </ButtonLink>
           </div>
         }
       />
