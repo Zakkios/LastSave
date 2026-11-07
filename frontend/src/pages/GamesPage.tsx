@@ -61,7 +61,7 @@ const GamesPage = () => {
         title="Mes jeux"
         description="Gérez votre collection de jeux vidéo."
         action={
-          <Link to="/search">
+          <Link to="/search?tab=games">
             <Button variant="primary">Ajouter un jeu</Button>
           </Link>
         }
@@ -79,7 +79,7 @@ const GamesPage = () => {
               : "Commencez par rechercher des jeux pour les ajouter à votre collection."
           }
           action={
-            <Link to="/search">
+            <Link to="/search?tab=games">
               <Button variant="ghost">Rechercher des jeux</Button>
             </Link>
           }

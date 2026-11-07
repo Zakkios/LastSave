@@ -61,7 +61,7 @@ const MangasPage = () => {
         title="Ma bibliothèque"
         description="Gérez votre collection personnelle de mangas."
         action={
-          <Link to="/search">
+          <Link to="/search?tab=mangas">
             <Button variant="primary">Ajouter un manga</Button>
           </Link>
         }
@@ -79,7 +79,7 @@ const MangasPage = () => {
               : "Commencez par rechercher des mangas pour les ajouter à votre collection."
           }
           action={
-            <Link to="/search">
+            <Link to="/search?tab=mangas">
               <Button variant="ghost">Rechercher des mangas</Button>
             </Link>
           }

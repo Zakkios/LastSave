@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Search, Library, Gamepad2, Loader2 } from "lucide-react";
 import { useMangaSearch } from "../features/manga/hooks/useMangaSearch";
@@ -10,6 +10,11 @@ import PageHeader from "../shared/components/PageHeader";
 import EmptyState from "../shared/components/EmptyState";
 
 type SearchTab = "mangas" | "games";
+
+// L'onglet est lu dans l'adresse (/search?tab=games) : les pages Jeux peuvent
+// ainsi ouvrir directement l'onglet Jeux. Sans paramètre : onglet Mangas.
+const getSearchTab = (value: string | null): SearchTab =>
+  value === "games" ? "games" : "mangas";
 
 type SearchResultsProps<T extends { id: string | number }> = {
   query: string;
@@ -101,8 +106,14 @@ const SearchResults = <T extends { id: string | number }>({
 
 const SearchPage = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<SearchTab>("mangas");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = getSearchTab(searchParams.get("tab"));
   const [query, setQuery] = useState("");
+
+  // replace : changer d'onglet n'ajoute pas d'étape à l'historique du navigateur.
+  const setActiveTab = (tab: SearchTab) => {
+    setSearchParams({ tab }, { replace: true });
+  };
 
   // Seul l'onglet affiché lance une recherche : l'autre reçoit une saisie vide.
   const mangaSearch = useMangaSearch(activeTab === "mangas" ? query : "");

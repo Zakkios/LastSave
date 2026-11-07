@@ -84,7 +84,9 @@ Frontend (calqué sur la partie manga) :
 - [x] Ancienne `GameCard` (carte courte) renommée `GamePreviewCard`, comme `MangaPreviewCard` ; une note de 0 n'affiche plus « 0 » seul ; plateformes affichées (4 max, puis « +N »)
 - [x] Couvertures : URLs publiques `images.igdb.com`, pas besoin de proxy
 - [x] Testé par Zakkios dans le navigateur (en local)
-- [ ] Petits ajustements UI / UX à voir avec Zakkios avant la mise en ligne
+- [ ] Petits ajustements UI / UX à voir avec Zakkios avant la mise en ligne :
+  - [x] Listes déroulantes (filtres, modales) aux couleurs du menu latéral, dans `index.css` : style complet sous Chrome, Edge et Safari 27+ (`appearance: base-select`) ; sous Firefox, liste native en sombre (survol géré par le navigateur)
+  - [x] Onglet de la recherche dans l'adresse (`/search?tab=games`) : « Ajouter un jeu », « Rechercher des jeux » et « Retour à la recherche » d'une fiche jeu ouvrent l'onglet Jeux (idem côté manga)
 - [ ] Mise en ligne (`npm run deploy`) : la migration des ID tournera en prod
 - Limites connues : résumés, genres et thèmes en anglais (IGDB n'a pas de traduction) ; plateformes en abréviations IGDB, parfois peu parlantes (« fds », « famicom »)
 
