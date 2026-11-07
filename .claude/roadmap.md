@@ -129,9 +129,17 @@ Choix de Zakkios : boutons en indigo, retrait proposé dans la modale de statut,
 - [ ] Testé par Zakkios dans le navigateur
 - À trancher : l'interface mélange « vous » (pages) et « tu » (modales, messages d'erreur)
 
-## Étape 8 — Suivi de lecture des mangas (en préparation)
+## Étape 8 — Suivi de lecture des mangas
 
-Maquette interactive validée par étapes avec Zakkios : https://claude.ai/artifact/8N23mVTE8zJxyYzHEj5tpz (privée). Rien n'est codé.
+Maquette interactive validée par étapes avec Zakkios : https://claude.ai/artifact/8N23mVTE8zJxyYzHEj5tpz (privée). Ajustement demandé à la validation : « Annuler » centré sous la carte.
+
+Fait (2026-11-07) :
+- [x] Back : `MangaEntry.progressUnit` (enum `ProgressUnit`, défaut `chapter`), `lastReadChapter` (décimal), `lastReadVolume` ; migration `Version20261107150257` (les entrées existantes passent en chapitres, sans numéro). Progression facultative dans `POST` / `PATCH /api/manga_entries` (valeurs invalides : 400), `POST /api/manga_entries/{providerId}/advance` (+1, « À lire » → « En cours »)
+- [x] Back : progression et fin de série (`isSeriesCompleted`, `finalChapter`, `finalVolume`, depuis `lastChapter` / `lastVolume` de MangaDex) dans les DTO ; dernier chapitre en français (`/manga/{id}/aggregate`, cache 6 h, 200 ms entre deux requêtes non cachées, `null` si MangaDex ne répond pas) sur la fiche, `GET /api/manga/latest-chapters?ids=` (12 max, badges) et `GET /api/manga/resumable` (« Terminé » dont la série continue, 10 candidats max)
+- [x] Front : fenêtre « Gérer ma lecture » (format, saisie directe, − / +, aides), encart « Ma lecture » de la fiche, rangée « En cours » de l'accueil (progression, +1, « Annuler » centré 5 s, badges, note de transparence, bandeaux), progression sur « Mes mangas » et dans la recherche ; « Gérer ce jeu » côté jeux ; « Statut modifié » → « Mis à jour » dans les dernières modifications
+- Testé de bout en bout côté back avec le vrai MangaDex (One Piece : 1197 en français ; Chainsaw Man : fin au chap. 232 ; Solo Leveling en tomes) ; lint et build du front OK
+- [ ] Testé par Zakkios dans le navigateur
+- Limites : les chiffres de « Ma collection » ne suivent pas les changements faits sur l'accueil avant rechargement ; après un changement de format dans la fenêtre, le dernier chapitre en français n'apparaît qu'au rechargement de la fiche
 
 Vérifié sur MangaDex (2026-11-07) : chapitres très incomplets pour les séries licenciées (One Piece : 12 chapitres en français, dernier connu 1197 ; Solo Leveling : aucun en français ; Chainsaw Man : 9 en français, 100 en anglais). `lastChapter` n'est renseigné que pour les séries terminées. Le suivi de lecture (saisi par l'utilisateur) est fiable ; les nouveautés sont un bonus.
 

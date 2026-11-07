@@ -44,7 +44,7 @@ APIs externes :
 ## Modèle de données
 
 `User` 1—n `MangaEntry` / `GameEntry` : `owner`, `providerId`, `status`, `createdAt`, `updatedAt`, unicité (`owner`, `providerId`).
-On ne stocke **que l'identifiant chez le fournisseur et le statut**. Titres, couvertures, etc. sont relus depuis l'API externe à chaque affichage, puis « enrichis » avec l'entrée de l'utilisateur (`isInLibrary`, statut, libellé).
+On ne stocke **que l'identifiant chez le fournisseur, le statut et, pour les mangas, la progression de lecture** (`progressUnit` chapitres ou tomes, `lastReadChapter`, `lastReadVolume`). Titres, couvertures, etc. sont relus depuis l'API externe à chaque affichage, puis « enrichis » avec l'entrée de l'utilisateur (`isInLibrary`, statut, libellé, progression).
 
 ## Commandes
 
