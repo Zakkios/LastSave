@@ -43,6 +43,12 @@ class GameEntryService
         return $gameEntry;
     }
 
+    public function removeGameEntry(GameEntry $gameEntry): void
+    {
+        $this->entityManager->remove($gameEntry);
+        $this->entityManager->flush();
+    }
+
     public function enrichGameWithUserEntry(
         UserGameEntryAwareDTO $game,
         ?GameEntry $gameEntry

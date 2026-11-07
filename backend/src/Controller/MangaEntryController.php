@@ -129,4 +129,37 @@ class MangaEntryController extends AbstractController
             'status' => $mangaEntry->getStatus()->value,
         ], 200);
     }
+
+    // Removes the manga from the user's library (added by mistake): 204 on success.
+    #[Route('/manga_entries/{providerId}', name: 'app_manga_entry_delete', methods: ['DELETE'])]
+    public function delete(string $providerId): JsonResponse
+    {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            return $this->json([
+                'message' => 'User not authenticated',
+            ], 401);
+        }
+
+        try {
+            $mangaId = Uuid::fromString($providerId);
+        } catch (\InvalidArgumentException) {
+            return $this->json([
+                'message' => 'Invalid UUID',
+            ], 400);
+        }
+
+        $mangaEntry = $this->mangaEntryService->findUserEntryForManga($user, $mangaId);
+
+        if (!$mangaEntry) {
+            return $this->json([
+                'message' => 'Manga entry not found',
+            ], 404);
+        }
+
+        $this->mangaEntryService->removeMangaEntry($mangaEntry);
+
+        return new JsonResponse(null, 204);
+    }
 }

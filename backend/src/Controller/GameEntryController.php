@@ -72,6 +72,27 @@ class GameEntryController extends AbstractController
         return $this->json($this->describe($gameEntry, 'Game entry updated successfully'));
     }
 
+    // Removes the game from the user's library (added by mistake): 204 on success.
+    #[Route('/game_entries/{providerId}', name: 'app_game_entry_delete', requirements: ['providerId' => '\d+'], methods: ['DELETE'])]
+    public function delete(int $providerId): JsonResponse
+    {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            return $this->json(['message' => 'User not authenticated'], 401);
+        }
+
+        $gameEntry = $this->gameEntryService->findUserEntryForGame($user, $providerId);
+
+        if (!$gameEntry) {
+            return $this->json(['message' => 'Game entry not found'], 404);
+        }
+
+        $this->gameEntryService->removeGameEntry($gameEntry);
+
+        return new JsonResponse(null, 204);
+    }
+
     /**
      * Expected JSON: {"providerId": <IGDB id, positive integer>, "status": "<GameStatus value>"}.
      *

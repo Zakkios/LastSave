@@ -58,6 +58,12 @@ class MangaEntryService
         return $mangaEntry;
     }
 
+    public function removeMangaEntry(MangaEntry $mangaEntry): void
+    {
+        $this->entityManager->remove($mangaEntry);
+        $this->entityManager->flush();
+    }
+
     public function enrichMangaWithUserEntry(
         UserMangaEntryAwareDTO $manga,
         ?MangaEntry $mangaEntry
