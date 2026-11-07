@@ -8,6 +8,10 @@ use Symfony\Component\Security\Http\Event\LogoutEvent;
 #[AsEventListener(event: LogoutEvent::class)]
 class LogoutListener
 {
+    public function __construct(
+        private readonly string $authCookieSameSite,
+    ) {}
+
     public function __invoke(LogoutEvent $event): void
     {
         $response = $event->getResponse();
@@ -22,7 +26,7 @@ class LogoutListener
             null,
             true,
             true,
-            'none'
+            $this->authCookieSameSite
         );
     }
 }
