@@ -66,13 +66,14 @@ Prérequis — incohérences repérées dans le code existant :
 - [x] Jeton Twitch gardé dans `cache.app` jusqu'à une heure avant son expiration (`expires_in`, ~65 jours) au lieu d'être redemandé à chaque requête ; si IGDB répond 401 (jeton révoqué), `GameService::requestIgdb()` oublie le jeton, en redemande un et réessaie une fois. À réutiliser pour les futurs appels IGDB. Note : un mauvais Client ID donne aussi un 401 (un essai de plus, puis l'erreur remonte)
 
 Backend (calqué sur la partie manga) :
-- [ ] `GameShortDTO`, `GameCompleteDTO`, `GameMapper`
-- [ ] `GameEntryService` + `GameLibraryQueryService`
-- [ ] `GET /api/game/autocomplete?query=&page=`
-- [ ] `GET /api/game/{id}`
-- [ ] `GET /api/game/library/page/{page}`
-- [ ] `POST` / `PATCH /api/game_entries`
-- [ ] Décider du sort de `GET /api/game/random` (aucun écran ne l'utilise)
+- [x] `GameShortDTO`, `GameCompleteDTO` (interface `UserGameEntryAwareDTO`), `GameMapper` : champs absents à `null`, note IGDB arrondie (0-100), couverture `images.igdb.com/…/t_cover_big`, plateformes en abréviations, développeur = 1re société marquée `developer`
+- [x] `GameEntryService` + `GameLibraryQueryService` ; `updatedAt` mis à jour à chaque modification (côté manga, `updateMangaEntry` ne le fait pas : à aligner un jour)
+- [x] `GET /api/game/autocomplete?query=&page=` : 8 résultats par page ; seuls les jeux principaux, extensions, extensions autonomes, remakes, remasters et éditions enrichies (`game_type` 0, 2, 4, 8, 9, 10) ; guillemets et caractères de contrôle retirés du terme (IGDB ne sait pas les échapper), 100 caractères max
+- [x] `GET /api/game/{id}` : 404 `Game not found` si IGDB ne connaît pas l'id
+- [x] `GET /api/game/library/page/{page}` : 20 par page, plus récent en premier (IGDB renvoie trié par id : remis dans l'ordre)
+- [x] `POST` / `PATCH /api/game_entries` : `providerId` entier positif obligatoire
+- [x] `GET /api/game/random` supprimé (et `useGame` côté front) : on ne garde que les appels IGDB réellement utilisés
+- Testé de bout en bout sur la base de dev avec le vrai IGDB (recherche, pagination, guillemets, fiche, 404, ajout, doublon 409, statut/id invalides 400, modification, bibliothèque ordonnée, marquage « dans ma bibliothèque », 401 sans connexion)
 
 Frontend :
 - [ ] Onglet « Jeux » de `SearchPage`

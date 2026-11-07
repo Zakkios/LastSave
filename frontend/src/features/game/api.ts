@@ -1,15 +1,16 @@
 import http from "../../services/http";
-import type { GameShortResponse, GameCompleteResponse, GameResponse } from "./types";
+import type {
+  GameCompleteResponse,
+  GameEntryPayload,
+  GameShortResponse,
+} from "./types";
 
-/**
- * TODO: Backend implementation required for GET /game/autocomplete
- */
 const getAutocompleteGames = async (
   query: string,
   page: number,
 ): Promise<GameShortResponse[]> => {
   try {
-    const response = await http.get("/game/autocomplete", {
+    const response = await http.get<GameShortResponse[]>("/game/autocomplete", {
       params: { query, page },
     });
     return response.data;
@@ -19,10 +20,7 @@ const getAutocompleteGames = async (
   }
 };
 
-/**
- * TODO: Backend implementation required for GET /game/:id
- */
-const getGameById = async (id: string): Promise<GameCompleteResponse> => {
+const getGameById = async (id: number): Promise<GameCompleteResponse> => {
   try {
     const response = await http.get<GameCompleteResponse>(`/game/${id}`);
     return response.data;
@@ -32,9 +30,11 @@ const getGameById = async (id: string): Promise<GameCompleteResponse> => {
   }
 };
 
-const getGameLibrary = async (): Promise<GameShortResponse[]> => {
+const getGameLibrary = async (page: number): Promise<GameShortResponse[]> => {
   try {
-    const response = await http.get<GameShortResponse[]>("/game/library");
+    const response = await http.get<GameShortResponse[]>(
+      `/game/library/page/${page}`,
+    );
     return response.data;
   } catch (error) {
     console.error("Error calling game library API:", error);
@@ -42,13 +42,18 @@ const getGameLibrary = async (): Promise<GameShortResponse[]> => {
   }
 };
 
-/**
- * TODO: Backend implementation required for GET /game/random
- */
-const getRandomGame = async (): Promise<GameResponse> => {
+const createGameEntry = async (payload: GameEntryPayload): Promise<void> => {
   try {
-    const response = await http.get("/game/random");
-    return response.data;
+    await http.post("/game_entries", payload);
+  } catch (error) {
+    console.error("Error calling game API:", error);
+    throw error;
+  }
+};
+
+const updateGameEntry = async (payload: GameEntryPayload): Promise<void> => {
+  try {
+    await http.patch("/game_entries", payload);
   } catch (error) {
     console.error("Error calling game API:", error);
     throw error;
@@ -59,5 +64,6 @@ export {
   getAutocompleteGames,
   getGameById,
   getGameLibrary,
-  getRandomGame
+  createGameEntry,
+  updateGameEntry,
 };

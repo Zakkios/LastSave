@@ -8,31 +8,28 @@ export interface GameLibraryStatus {
   playStatusLabel: string | null;
 }
 
+export interface GameEntryPayload {
+  // Identifiant IGDB du jeu.
+  providerId: number;
+  status: GameStatus;
+}
+
+// GameShortDTO côté back.
 export interface GameShortResponse extends GameLibraryStatus {
   // Identifiant IGDB : un entier.
   id: number;
   title: string;
-  developer?: string;
-  coverUrl?: string;
-  rating?: number;
-  platforms?: string[];
+  developer: string | null;
+  coverUrl: string | null;
+  // Note IGDB de 0 à 100.
+  rating: number | null;
+  platforms: string[];
 }
 
+// GameCompleteDTO côté back.
 export interface GameCompleteResponse extends GameShortResponse {
-  summary: string;
-  releaseYear?: string;
-  genres?: string[];
-  themes?: string[];
-}
-
-// Réponse brute de GET /api/game/random (le sort de cette route reste à décider).
-export interface GameResponse {
-  name: string;
-  summary: string;
-  platforms: number[];
-  rating: number;
-  cover: {
-    id: number;
-    image_id: string;
-  };
+  summary: string | null;
+  releaseYear: string | null;
+  genres: string[];
+  themes: string[];
 }
