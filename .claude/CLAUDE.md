@@ -18,7 +18,7 @@ La feuille de route (fait / reste à faire / ordre) est dans [roadmap.md](roadma
 
 | Dossier | Contenu |
 |---|---|
-| `backend/` | API JSON Symfony 7.4 (LTS), PHP ≥ 8.2, Doctrine ORM 3 + migrations, MariaDB 11.4 |
+| `backend/` | API JSON Symfony 7.4 (LTS), PHP 8.5 (minimum imposé par `composer.json`, plateforme Composer fixée à 8.5.0), Doctrine ORM 3 + migrations, MariaDB 11.4 |
 | `frontend/` | SPA React 19 + TypeScript, Vite 8, Tailwind CSS 4, react-router 7, axios, lucide-react |
 | `docker/` | MariaDB pour le dev local uniquement (`compose.yml`) |
 | `package.json` (racine) | Scripts raccourcis uniquement, aucune dépendance |

@@ -13,7 +13,7 @@ https://lastsave.zakkios.fr/
 
 ## Développement local
 
-Prérequis : Node 24, PHP 8.4+ (dans le `PATH`), [Symfony CLI](https://symfony.com/download), Docker.
+Prérequis : Node 24, PHP 8.5 (8.5.12 ou plus, qui corrige les failles « PHP2Shell ») dans le `PATH`, [Symfony CLI](https://symfony.com/download), Docker.
 
 1. Installer les dépendances : `npm run setup`
 2. Créer les fichiers d'environnement (non versionnés) :
