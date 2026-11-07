@@ -1,0 +1,4 @@
+/node_modules/
+
+# Claude Code: personal, per-machine settings
+/.claude/settings.local.json

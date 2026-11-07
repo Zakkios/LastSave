@@ -1,5 +1,9 @@
 {
+  "name": "lastsave",
+  "private": true,
   "scripts": {
+    "dev": "npm run db:up && concurrently --kill-others-on-fail --names api,front --prefix-colors blue,magenta \"npm:back\" \"npm:front\"",
+    "setup": "npm ci && npm --prefix frontend ci && cd backend && symfony composer install",
     "back": "cd backend && symfony server:start",
     "front": "cd frontend && npm run dev",
     "db:up": "cd docker && docker compose --env-file .env.docker up -d database",
@@ -8,5 +12,8 @@
     "db:logs": "cd docker && docker logs -f lastsave-mariadb",
     "db:shell": "cd docker && docker exec -it lastsave-mariadb sh -c \"mariadb -u\\\"$MARIADB_USER\\\" -p\\\"$MARIADB_PASSWORD\\\" \\\"$MARIADB_DATABASE\\\"\"",
     "db:reset": "cd docker && docker compose --env-file .env.docker down -v && docker compose --env-file .env.docker up -d database"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.6"
   }
 }
