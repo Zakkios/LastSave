@@ -3,7 +3,7 @@
 Reprise du projet le 2026-11-07, après environ 6 mois de pause (dernier commit le 2026-05-23).
 État : partie manga terminée (recherche, fiche, bibliothèque paginée, ajout/modification de statut). Partie jeux à peine commencée. Pas encore de tests.
 
-> ⚠️ Failles PHP « PHP2Shell » (CVE-2026-109618 et CVE-2026-109619, exécution de code à distance, publiées le 2026-10-21) : toutes les versions de PHP 5.4 à 8.5.11 sont touchées, corrigées dans 8.5.12 / 8.4.27. La prod est en 8.5.12 (web et CLI) : pas exposée. Le PHP local (8.5.5) est vulnérable.
+> ⚠️ Failles PHP « PHP2Shell » (CVE-2026-109618 et CVE-2026-109619, exécution de code à distance, publiées le 2026-10-21) : toutes les versions de PHP 5.4 à 8.5.11 sont touchées, corrigées dans 8.5.12 / 8.4.27. La prod et le PHP local sont en 8.5.12 : plus exposés.
 
 ## Étape 0 — Contexte Claude ✅
 
@@ -15,7 +15,7 @@ Reprise du projet le 2026-11-07, après environ 6 mois de pause (dernier commit 
 - [x] `docker/.env.docker` et `backend/.env.local` créés (secrets de dev aléatoires), clés JWT générées
 - [x] Parcours API vérifié en local : inscription, connexion, `/me`, recherche MangaDex, refresh, déconnexion
 - [x] `IGDB_CLIENT_ID` / `IGDB_CLIENT_SECRET` renseignés et vérifiés (jeton Twitch + requête IGDB via `/game/random`)
-- [ ] Zakkios : mettre à jour le PHP local (`C:\php`, 8.5.5) en 8.5.12 ou plus (failles PHP2Shell)
+- [x] PHP local mis à jour en 8.5.12 (zip officiel vérifié par SHA-256, même `php.ini`, mêmes extensions) ; ancienne version gardée dans `C:\php-8.5.5-sauvegarde`. PATH Windows corrigé : `C:\php` à la place de l'entrée morte `C:\Program Files (x86)\PHP`
 - [ ] Zakkios : tester le parcours manga dans le navigateur
 - [x] Nettoyages : ligne parasite de `backend/.gitignore`, `DATABASE_URL` par défaut en MariaDB, route morte `/token/logout` + règle `/token/invalidate`, README Vite remplacé par un README racine
 - [x] Sécurité : cookies d'auth en `SameSite=Lax` (paramètre `auth.cookie.samesite`)
