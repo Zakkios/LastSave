@@ -14,7 +14,8 @@ paths:
 
 ## Règles
 
-- Tous les appels API passent par l'instance axios de `src/services/http.ts` (cookies + refresh automatique). Jamais de `fetch` ni de nouvel `axios.create`.
+- Tous les appels API passent par l'instance axios de `src/services/http.ts` (base `/api`, refresh automatique). Jamais de `fetch` ni de nouvel `axios.create`. Les chemins s'écrivent sans `/api` (ex. `http.get("/manga/autocomplete")`).
+- Pas d'URL d'API en dur ni de variable d'environnement : front et API partagent le même domaine, et en dev Vite relaie `/api` vers Symfony.
 - Une fonction par endpoint dans `features/<domaine>/api.ts` ; un hook par cas d'usage (`use<X>Search`, `use<X>Detail`, `use<X>Library`, `use<X>InfiniteList`).
 - Les types front reprennent exactement les noms de champs des DTO renvoyés par le backend.
 - Textes de l'interface en français.

@@ -21,18 +21,24 @@ La feuille de route (fait / reste à faire / ordre) est dans [roadmap.md](roadma
 | `backend/` | API JSON Symfony 7.4 (LTS), PHP 8.5 (minimum imposé par `composer.json`, plateforme Composer fixée à 8.5.0), Doctrine ORM 3 + migrations, MariaDB 11.4 |
 | `frontend/` | SPA React 19 + TypeScript, Vite 8, Tailwind CSS 4, react-router 7, axios, lucide-react |
 | `docker/` | MariaDB pour le dev local uniquement (`compose.yml`) |
-| `package.json` (racine) | Scripts raccourcis uniquement, aucune dépendance |
+| `package.json` (racine) | Scripts raccourcis, plus `concurrently` pour `npm run dev` |
 
 APIs externes :
-- **MangaDex** (mangas) — API publique sans clé. Les couvertures passent par un proxy backend (`/manga/cover/...`, route publique).
+- **MangaDex** (mangas) — API publique sans clé. Les couvertures passent par un proxy backend (`/api/manga/cover/...`, route publique, URL relative).
 - **IGDB** (jeux, propriété de Twitch) — jeton OAuth « client credentials » via `POST https://id.twitch.tv/oauth2/token`, puis `POST https://api.igdb.com/v4/<endpoint>` avec une requête Apicalypse en texte brut et les en-têtes `Client-ID` + `Authorization: Bearer`. Limite : 4 requêtes/s.
+
+## Un seul domaine pour le front et l'API
+
+- Toutes les routes Symfony sont sous `/api` (préfixe global dans `backend/config/routes.yaml`) ; le reste des URLs appartient à React.
+- En prod, `backend/public/.htaccess` aiguille : `/api/...` → `index.php`, fichier existant → servi tel quel (le front compilé est posé dans `public/`), tout le reste → `index.html`. Même modèle que l'autre projet de Zakkios (`dev-irremplacable`).
+- En dev, Vite relaie `/api` vers Symfony (`frontend/vite.config.ts`) : le navigateur ne parle qu'à http://localhost:5173. Pas de CORS nulle part.
 
 ## Authentification
 
-- `POST /login` (json_login) → LexikJWT : jeton de 15 min dans le cookie httpOnly `BEARER`.
-- Refresh token Gesdinet (30 jours, usage unique) dans un cookie httpOnly, renouvelé par `POST /token/refresh`.
-- Cookies `Secure` + httpOnly. Leur `SameSite` vient du paramètre `auth.cookie.samesite` (`config/services.yaml`) : `lax` en prod (front et API sont tous deux sous `zakkios.fr`), `none` en dev (Vite en http et API en https = deux sites).
-- Front : `src/services/http.ts` envoie les cookies (`withCredentials`) et rejoue une requête après refresh quand l'API répond 401.
+- `POST /api/login` (json_login) → LexikJWT : jeton de 15 min dans le cookie httpOnly `BEARER`.
+- Refresh token Gesdinet (30 jours, usage unique) dans un cookie httpOnly, renouvelé par `POST /api/token/refresh`.
+- Cookies `Secure` + httpOnly + `SameSite=Lax` (paramètre `auth.cookie.samesite` dans `config/services.yaml`, aussi utilisé par `LogoutListener`). En dev, les navigateurs acceptent les cookies `Secure` sur http://localhost (Chrome, Edge, Firefox).
+- Front : `src/services/http.ts` appelle `/api` et rejoue une requête après refresh quand l'API répond 401.
 - Toutes les routes exigent d'être connecté, sauf celles listées dans `access_control` (`backend/config/packages/security.yaml`).
 
 ## Modèle de données
@@ -44,7 +50,7 @@ On ne stocke **que l'identifiant chez le fournisseur et le statut**. Titres, cou
 
 Depuis la racine :
 - `npm run setup` — installe les dépendances (racine, front, back)
-- `npm run dev` — démarre la base, puis l'API (https://127.0.0.1:8000) et le front (http://localhost:5173) dans un seul terminal
+- `npm run dev` — démarre la base, puis l'API (https://127.0.0.1:8000) et le front (http://localhost:5173, qui relaie `/api`) dans un seul terminal
 - `npm run db:up` / `db:down` / `db:restart` / `db:logs` / `db:shell` — `db:reset` **efface les données**
 - `npm run back` / `npm run front` — l'API ou le front seul
 
@@ -60,15 +66,14 @@ CI : `.github/workflows/ci.yml` (lint, build, audits de sécurité, migrations +
 
 ## Configuration locale (non versionnée — ne jamais commiter)
 
-- `backend/.env.local` : `APP_SECRET`, `DATABASE_URL` (`mysql://…?serverVersion=11.4.11-MariaDB&charset=utf8mb4`), `JWT_PASSPHRASE`, `IGDB_CLIENT_ID`, `IGDB_CLIENT_SECRET` (console https://dev.twitch.tv/console), `CORS_ALLOW_ORIGIN` si besoin
+- `backend/.env.local` : `APP_SECRET`, `DATABASE_URL` (`mysql://…?serverVersion=11.4.11-MariaDB&charset=utf8mb4`), `JWT_PASSPHRASE`, `IGDB_CLIENT_ID`, `IGDB_CLIENT_SECRET` (console https://dev.twitch.tv/console)
 - `backend/config/jwt/*.pem` : clés JWT
-- `frontend/.env.local` (dev) et `frontend/.env.production` (build prod) : `VITE_API_URL`
 - `docker/.env.docker` : variables `MARIADB_*` (modèle : `docker/.env.docker.exemple`)
 
 ## Hébergement actuel
 
-- **Frontend** : https://lastsave.zakkios.fr/ sur Cloudflare Workers (assets statiques, repli SPA), config `frontend/wrangler.jsonc`.
-- **Backend** : https://api-lastsave.zakkios.fr/ sur O2Switch (hébergement mutualisé, Apache → `symfony/apache-pack`). Premier déploiement fait à la main en FTP.
-- Cible : tout regrouper sur O2Switch, avec un déploiement lancé en SSH depuis le PC de Zakkios, dont l'IP est autorisée chez O2Switch (roadmap, étape 4).
+- **Frontend** : https://lastsave.zakkios.fr/ sur Cloudflare Workers (ancienne version, appelle encore l'API sur le sous-domaine).
+- **Backend** : https://api-lastsave.zakkios.fr/ sur O2Switch (`souris.o2switch.net`, utilisateur `laza6411`, alias SSH `o2switch-lastsave`), envoyé à la main en FTP dans `~/api-lastsave.zakkios.fr/`.
+- Cible (roadmap, étape 4) : tout sur O2Switch sous `lastsave.zakkios.fr`, sans sous-domaine ni Cloudflare, déployé en SSH depuis le PC de Zakkios (son IP est autorisée) avec des versions + un lien `courante`, comme `dev-irremplacable`.
 
 @roadmap.md

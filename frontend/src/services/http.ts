@@ -1,5 +1,8 @@
 import axios, { type InternalAxiosRequestConfig } from "axios";
-import { env } from "../config/env";
+
+// Front et API partagent le même domaine : l'API est servie sous /api
+// (en dev, Vite relaie /api vers Symfony, voir vite.config.ts).
+const API_BASE_URL = "/api";
 
 interface AuthRetryConfig extends InternalAxiosRequestConfig {
   _authRetry?: boolean;
@@ -17,7 +20,7 @@ const authFailureListeners = new Set<AuthFailureListener>();
 const recentRefreshWindowMs = 5_000;
 
 const http = axios.create({
-  baseURL: env.apiBaseUrl,
+  baseURL: API_BASE_URL,
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
@@ -25,7 +28,7 @@ const http = axios.create({
 });
 
 const refreshHttp = axios.create({
-  baseURL: env.apiBaseUrl,
+  baseURL: API_BASE_URL,
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
@@ -49,17 +52,8 @@ const notifyAuthFailure = () => {
   });
 };
 
-const getRequestPath = (url: string | undefined) => {
-  if (!url) {
-    return "";
-  }
-
-  try {
-    return new URL(url, env.apiBaseUrl).pathname;
-  } catch {
-    return url;
-  }
-};
+// Chemin relatif à API_BASE_URL (ex. "/login"), sans la query string.
+const getRequestPath = (url: string | undefined) => (url ?? "").split("?")[0];
 
 const shouldRefreshAuth = (config: InternalAxiosRequestConfig | undefined) => {
   if (!config) {

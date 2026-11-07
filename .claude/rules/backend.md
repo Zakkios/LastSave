@@ -21,8 +21,9 @@ Chaîne suivie par la partie manga, à reproduire pour les jeux :
 ## Règles
 
 - Erreurs renvoyées sous la forme `{"message": "..."}`, en anglais. Codes : 400 entrée invalide (`\InvalidArgumentException`), 401 non connecté, 404 introuvable, 409 doublon (`\DomainException`).
-- Routes déclarées en attributs `#[Route]` sur les contrôleurs, sans préfixe `/api`.
-- Nouvelle route publique → l'ajouter à `access_control` dans `config/packages/security.yaml` (par défaut, tout exige d'être connecté).
+- Routes déclarées en attributs `#[Route]` sur les contrôleurs, **sans** écrire `/api` : le préfixe est ajouté globalement dans `config/routes.yaml`.
+- Nouvelle route publique → l'ajouter à `access_control` dans `config/packages/security.yaml`, avec le préfixe (`^/api/...`). Par défaut, tout exige d'être connecté.
+- URLs renvoyées au front (ex. couvertures) : chemins relatifs (`UrlGeneratorInterface::ABSOLUTE_PATH`), front et API partageant le même domaine.
 - Injection par constructeur avec propriétés promues `private readonly`. Paramètres scalaires via `bind` dans `config/services.yaml` (ex. `$igdbClientId`).
 - Nouvelle variable d'environnement → la déclarer aussi, vide, dans `backend/.env`.
 - UUID en base = `BINARY(16)` sous MariaDB : pour un `IN (:ids)`, convertir avec `->toBinary()` et `ArrayParameterType::BINARY` (voir `MangaEntryRepository::findByOwnerAndProviderIds`).

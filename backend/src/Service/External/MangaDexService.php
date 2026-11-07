@@ -150,7 +150,7 @@ class MangaDexService
                 'mangaId'  => $mangaId,
                 'fileName' => $fileName . '.256.jpg',
             ],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            UrlGeneratorInterface::ABSOLUTE_PATH
         );
     }
 

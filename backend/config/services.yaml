@@ -11,9 +11,9 @@ parameters:
     igdb.client.secret: '%env(resolve:IGDB_CLIENT_SECRET)%'
 
     # SameSite of the auth cookies (BEARER + refresh token), also used on logout.
-    # Prod: front (lastsave.zakkios.fr) and API (api-lastsave.zakkios.fr) are the
-    # same site, so "lax" works and stops browsers from sending the cookies on
-    # requests initiated by other sites (CSRF).
+    # Front and API share the same origin (lastsave.zakkios.fr + /api, and in dev
+    # Vite relays /api to Symfony), so "lax" works everywhere and stops browsers
+    # from sending the cookies on requests initiated by other sites (CSRF).
     auth.cookie.samesite: lax
 
 services:
@@ -33,9 +33,3 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
-
-when@dev:
-    parameters:
-        # Dev: Vite (http://localhost:5173) and the API (https://127.0.0.1:8000)
-        # are different sites, so browsers only send the cookies with "none".
-        auth.cookie.samesite: none

@@ -7,11 +7,11 @@
 # To list all registered routes, run the following command:
 #   bin/console debug:router
 
+# Front and API share one domain: every API route lives under /api, the rest
+# of the URLs belong to the React app (see public/.htaccess).
 controllers:
     resource: routing.controllers
+    prefix: /api
 
 api_login_check:
-    path: /login
-
-api_refresh_token:
-    path: /token/refresh
+    path: /api/login
