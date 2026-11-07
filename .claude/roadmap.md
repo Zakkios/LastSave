@@ -48,7 +48,7 @@ Déploiement lancé depuis le PC de Zakkios en SSH (son IP est autorisée chez O
 - [x] Accès SSH par clé dédiée, empreinte du serveur vérifiée
 - [x] Migrations en base de prod vérifiées (table `doctrine_migration_versions`) : uniquement `Version20260522084558`, identique au dépôt
 - [x] Code « un seul domaine » : routes sous `/api`, `.htaccess` d'aiguillage, URLs de couvertures relatives, relais `/api` dans Vite, `SameSite=Lax` partout, bundle CORS retiré, `VITE_API_URL` et `wrangler.jsonc` supprimés. Testé en local à travers Vite
-- [ ] Script de déploiement calqué sur `dev-irremplacable` (`deploiement/`) : paquet back + front compilé, envoi, installation dans `versions/`, bascule du lien `courante`, retour arrière
+- [x] Script de déploiement calqué sur `dev-irremplacable` (`deploiement/`, `npm run deploy`) : commit poussé + CI verte exigés, paquet back + front compilé (sans secret), envoi, `composer install` sur le serveur, migrations, bascule du lien `courante`, 3 versions gardées, `npm run deploy:retour`. Paquet testé en local
 - [ ] Mise en place unique sur le serveur : `~/lastsave/{versions,partage}`, `partage/.env.local` et clés JWT copiés depuis `~/api-lastsave.zakkios.fr/`
 - [ ] cPanel : ajouter `lastsave.zakkios.fr` avec la racine web `~/lastsave/courante/public`
 - [ ] Premier déploiement, testé avant de toucher au DNS

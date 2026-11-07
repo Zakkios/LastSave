@@ -53,6 +53,7 @@ Depuis la racine :
 - `npm run dev` — démarre la base, puis l'API (https://127.0.0.1:8000) et le front (http://localhost:5173, qui relaie `/api`) dans un seul terminal
 - `npm run db:up` / `db:down` / `db:restart` / `db:logs` / `db:shell` — `db:reset` **efface les données**
 - `npm run back` / `npm run front` — l'API ou le front seul
+- `npm run deploy` — met en ligne le commit actuel (poussé, CI verte) ; `npm run deploy:retour` revient à la version précédente ; `npm run deploy -- --paquet` prépare seulement le paquet. Scripts dans `deploiement/`, config locale dans `deploiement/config` (ignorée par Git)
 
 Frontend (`frontend/`) : `npm run dev`, `npm run lint`, `npm run build` (inclut `tsc -b`).
 

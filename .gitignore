@@ -2,3 +2,5 @@
 
 # Claude Code: personal, per-machine settings
 /.claude/settings.local.json
+/deploiement/config
+/deploiement/paquet/
