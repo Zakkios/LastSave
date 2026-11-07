@@ -128,7 +128,7 @@ const GameEntryModalContent = ({
           <div className="mb-5 flex items-start justify-center gap-4 text-center">
             <div>
               <h2 className="text-xl font-bold text-zinc-100">
-                {isInLibrary ? "Modifier ma liste" : "Ajouter à ma liste"}
+                {isInLibrary ? "Gérer ce jeu" : "Ajouter à ma liste"}
               </h2>
               <p className="mt-1 text-sm text-zinc-400">
                 Choisis où tu en es avec ce jeu.
@@ -242,7 +242,7 @@ const GameEntryModalContent = ({
                   onClick={handleSubmit}
                   disabled={!selectedStatus || loading}
                 >
-                  {isInLibrary ? "Modifier" : "Ajouter"}
+                  {isInLibrary ? "Enregistrer" : "Ajouter"}
                 </Button>
               </div>
             </div>

@@ -112,7 +112,7 @@ export const GameCard = ({ game }: GameCardProps) => {
                 {libraryStatus.isInLibrary ? (
                   <>
                     <Pencil className="h-4 w-4" />
-                    Modifier mon statut
+                    Gérer ce jeu
                   </>
                 ) : (
                   <>
