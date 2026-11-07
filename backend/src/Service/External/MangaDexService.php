@@ -13,6 +13,8 @@ class MangaDexService
     private const BASE_URL = 'https://api.mangadex.org';
     private const AUTOCOMPLETE_LIMIT = 8;
     private const PAGE_LIMIT = 20;
+    // Most ids MangaDex accepts in a single /manga request.
+    private const IDS_LIMIT = 100;
 
     public function __construct(
         private ApiClient $apiClient,
@@ -66,33 +68,41 @@ class MangaDexService
     /**
      * @param string[] $ids
      *
-     * @return MangaCompleteDTO[]
+     * @return MangaCompleteDTO[] in the same order as $ids (unknown ids are skipped)
      */
     public function getMangasByIds(array $ids): array
     {
+        $ids = array_values(array_unique($ids));
+
         if ($ids === []) {
             return [];
         }
 
+        // Without an explicit limit, MangaDex returns only 10 mangas (maximum: 100).
         $mangaData = $this->apiClient->get(self::BASE_URL, '/manga', [
             'query' => [
                 'ids' => $ids,
+                'limit' => min(count($ids), self::IDS_LIMIT),
                 'includes' => ['cover_art', 'author'],
             ],
         ]);
 
-        $mangas = $mangaData['data'] ?? [];
+        $mangasById = array_column($mangaData['data'] ?? [], null, 'id');
 
+        // MangaDex uses its own order: put the mangas back in the requested order.
         $mangaDTOs = [];
 
-        foreach ($mangas as $manga) {
-            $coverUrl = $this->getCoverUrlFromRelationship($manga);
-            $author = $this->getAuthorNameFromRelationship($manga);
+        foreach ($ids as $id) {
+            if (!isset($mangasById[$id])) {
+                continue;
+            }
+
+            $manga = $mangasById[$id];
 
             $mangaDTOs[] = $this->mangaCompleteMapper->fromEntity(
                 ['data' => $manga],
-                $author,
-                $coverUrl
+                $this->getAuthorNameFromRelationship($manga),
+                $this->getCoverUrlFromRelationship($manga)
             );
         }
 
