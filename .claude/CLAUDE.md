@@ -31,7 +31,7 @@ APIs externes :
 
 - `POST /login` (json_login) → LexikJWT : jeton de 15 min dans le cookie httpOnly `BEARER`.
 - Refresh token Gesdinet (30 jours, usage unique) dans un cookie httpOnly, renouvelé par `POST /token/refresh`.
-- Cookies actuellement en `SameSite=None; Secure`. Front et API sont tous deux sous `zakkios.fr` (même site), donc `Lax` suffit en prod — voir roadmap, étape 1.
+- Cookies `Secure` + httpOnly. Leur `SameSite` vient du paramètre `auth.cookie.samesite` (`config/services.yaml`) : `lax` en prod (front et API sont tous deux sous `zakkios.fr`), `none` en dev (Vite en http et API en https = deux sites).
 - Front : `src/services/http.ts` envoie les cookies (`withCredentials`) et rejoue une requête après refresh quand l'API répond 401.
 - Toutes les routes exigent d'être connecté, sauf celles listées dans `access_control` (`backend/config/packages/security.yaml`).
 
@@ -43,19 +43,20 @@ On ne stocke **que l'identifiant chez le fournisseur et le statut**. Titres, cou
 ## Commandes
 
 Depuis la racine :
+- `npm run setup` — installe les dépendances (racine, front, back)
+- `npm run dev` — démarre la base, puis l'API (https://127.0.0.1:8000) et le front (http://localhost:5173) dans un seul terminal
 - `npm run db:up` / `db:down` / `db:restart` / `db:logs` / `db:shell` — `db:reset` **efface les données**
-- `npm run back` — `symfony server:start` dans `backend/`
-- `npm run front` — Vite dans `frontend/`
+- `npm run back` / `npm run front` — l'API ou le front seul
 
 Frontend (`frontend/`) : `npm run dev`, `npm run lint`, `npm run build` (inclut `tsc -b`).
 
-Backend (`backend/`) : sous Windows, `php` n'est pas dans le PATH du shell → passer par la CLI Symfony (PHP 8.5 en local) :
+Backend (`backend/`) : sur le PC de Zakkios, PHP 8.5 est dans `C:\php`. Si `symfony server:start` affiche « no PHP binaries detected », c'est que `C:\php` manque au PATH. Le mode démon (`symfony server:start -d`) échoue sous Windows (fichier de log verrouillé) : lancer le serveur au premier plan. Passer par la CLI Symfony :
 - `symfony composer install`
 - `symfony console doctrine:migrations:diff` puis `symfony console doctrine:migrations:migrate`
 - `symfony console debug:router`
 - `symfony console lexik:jwt:generate-keypair`
 
-Il n'existe encore **aucun test ni CI**.
+CI : `.github/workflows/ci.yml` (lint, build, audits de sécurité, migrations + validation du schéma). Il n'existe encore **aucun test**.
 
 ## Configuration locale (non versionnée — ne jamais commiter)
 
@@ -68,6 +69,6 @@ Il n'existe encore **aucun test ni CI**.
 
 - **Frontend** : https://lastsave.zakkios.fr/ sur Cloudflare Workers (assets statiques, repli SPA), config `frontend/wrangler.jsonc`.
 - **Backend** : https://api-lastsave.zakkios.fr/ sur O2Switch (hébergement mutualisé, Apache → `symfony/apache-pack`). Premier déploiement fait à la main en FTP.
-- Cible : tout regrouper sur O2Switch, avec un déploiement automatique depuis GitHub Actions (roadmap, étape 5).
+- Cible : tout regrouper sur O2Switch, avec un déploiement lancé en SSH depuis le PC de Zakkios, dont l'IP est autorisée chez O2Switch (roadmap, étape 4).
 
 @roadmap.md
