@@ -6,8 +6,9 @@ import { MANGA_SEARCH_LIMIT } from "../constants";
 
 const NO_RESULTS: MangaShortResponse[] = [];
 
-export const useMangaSearch = () => {
-  const [query, setQuery] = useState("");
+// La saisie appartient à la page : elle passe une chaîne vide quand l'onglet
+// Mangas n'est pas affiché, pour ne pas interroger MangaDex inutilement.
+export const useMangaSearch = (query: string) => {
   const [results, setResults] = useState<MangaShortResponse[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [hasMore, setHasMore] = useState(false);
@@ -15,6 +16,10 @@ export const useMangaSearch = () => {
 
   const debouncedQuery = useDebounce(query, 200);
   const isQueryTooShort = debouncedQuery.trim().length < 2;
+  // Saisie pas encore partie (délai en cours) : compte comme une recherche en
+  // cours, pour ne pas afficher « Aucun résultat » le temps du délai.
+  const isWaitingForDebounce =
+    query.trim().length >= 2 && query.trim() !== debouncedQuery.trim();
 
   const pageRef = useRef(0);
   const isFetchingRef = useRef(false);
@@ -111,12 +116,10 @@ export const useMangaSearch = () => {
   }, [hasMore]);
 
   return {
-    query,
-    setQuery,
     results: isQueryTooShort ? NO_RESULTS : results,
     hasMore: !isQueryTooShort && hasMore,
-    isSearching: !isQueryTooShort && isSearching,
-    error,
+    isSearching: isWaitingForDebounce || (!isQueryTooShort && isSearching),
+    error: isQueryTooShort ? null : error,
     fetchMore,
   };
 };

@@ -75,12 +75,24 @@ Backend (calqué sur la partie manga) :
 - [x] `GET /api/game/random` supprimé (et `useGame` côté front) : on ne garde que les appels IGDB réellement utilisés
 - Testé de bout en bout sur la base de dev avec le vrai IGDB (recherche, pagination, guillemets, fiche, 404, ajout, doublon 409, statut/id invalides 400, modification, bibliothèque ordonnée, marquage « dans ma bibliothèque », 401 sans connexion)
 
-Frontend :
-- [ ] Onglet « Jeux » de `SearchPage`
-- [ ] `GamesPage` : bibliothèque avec scroll infini
-- [ ] `GameDetailPage`
-- [ ] Modale d'ajout / modification (sur le modèle de `MangaEntryModal`)
-- [ ] Couvertures : URLs publiques `images.igdb.com`, pas besoin de proxy
+Frontend (calqué sur la partie manga) :
+- [x] Hooks `useGameSearch` (délai de 300 ms, IGDB limitant à 4 requêtes/s), `useGameDetail` (id de l'URL vérifié, message dédié si IGDB répond 404), `useGameLibrary` (garde-fou contre deux chargements simultanés, erreur affichée au lieu d'un chargeur sans fin)
+- [x] Onglet « Jeux » de `SearchPage` : une seule saisie partagée par les deux onglets, seul l'onglet affiché interroge son API. `useMangaSearch` reçoit donc la saisie en paramètre. Dans les deux onglets, le délai de saisie compte comme « recherche en cours » (plus de « Aucun résultat » affiché un instant)
+- [x] `GamesPage` : bibliothèque en scroll infini, filtre par titre et par statut
+- [x] `GameDetailPage` + `GameCard` (fiche : couverture, statut, sortie, note, résumé, genres, thèmes, plateformes)
+- [x] `GameEntryModal` (ajout / modification, sur le modèle de `MangaEntryModal`) et `GameStatusBadge` (mêmes couleurs que les statuts manga)
+- [x] Ancienne `GameCard` (carte courte) renommée `GamePreviewCard`, comme `MangaPreviewCard` ; une note de 0 n'affiche plus « 0 » seul ; plateformes affichées (4 max, puis « +N »)
+- [x] Couvertures : URLs publiques `images.igdb.com`, pas besoin de proxy
+- [x] Testé par Zakkios dans le navigateur (en local)
+- [ ] Petits ajustements UI / UX à voir avec Zakkios avant la mise en ligne
+- [ ] Mise en ligne (`npm run deploy`) : la migration des ID tournera en prod
+- Limites connues : résumés, genres et thèmes en anglais (IGDB n'a pas de traduction) ; plateformes en abréviations IGDB, parfois peu parlantes (« fds », « famicom »)
+
+## À factoriser un jour
+
+- `useMangaSearch` et `useGameSearch` sont quasi identiques (gestion des requêtes concurrentes comprise) : un hook générique dans `shared/hooks` pourrait servir aux deux
+- `StatusBadge` (manga) et `GameStatusBadge` : mêmes couleurs, un seul composant partagé possible
+- `useMangaLibrary` : reprendre les garde-fous de `useGameLibrary` (double chargement, chargeur sans fin en cas d'erreur)
 
 ## Plus tard (idées repérées dans le code)
 
