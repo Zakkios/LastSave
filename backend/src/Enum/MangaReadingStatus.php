@@ -12,7 +12,7 @@ enum MangaReadingStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::to_read => 'A lire',
+            self::to_read => 'À lire',
             self::reading => 'En cours',
             self::completed => 'Terminé',
             self::dropped => 'Abandonné',

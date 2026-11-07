@@ -1,18 +1,16 @@
-export type GameStatus =
-  | "backlog"
-  | "playing"
-  | "completed"
-  | "retired"
-  | "abandoned";
+// Mêmes valeurs que l'enum GameStatus du back (parallèle des statuts manga).
+export type GameStatus = "to_play" | "playing" | "completed" | "dropped";
 
+// Mêmes noms de champs que côté manga (readingStatus → playStatus).
 export interface GameLibraryStatus {
   isInLibrary: boolean;
-  status: GameStatus | null;
-  statusLabel: string | null;
+  playStatus: GameStatus | null;
+  playStatusLabel: string | null;
 }
 
 export interface GameShortResponse extends GameLibraryStatus {
-  id: string;
+  // Identifiant IGDB : un entier.
+  id: number;
   title: string;
   developer?: string;
   coverUrl?: string;
@@ -27,7 +25,7 @@ export interface GameCompleteResponse extends GameShortResponse {
   themes?: string[];
 }
 
-// Deprecated or old type for compatibility if needed, but we should migrate
+// Réponse brute de GET /api/game/random (le sort de cette route reste à décider).
 export interface GameResponse {
   name: string;
   summary: string;

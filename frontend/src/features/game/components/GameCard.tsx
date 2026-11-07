@@ -41,9 +41,9 @@ export const GameCard = ({ game }: GameCardProps) => {
               {Math.round(game.rating)}%
             </div>
           )}
-          {game.statusLabel && (
+          {game.playStatusLabel && (
             <span className="rounded-full bg-zinc-800 px-2 py-0.5 text-[10px] font-semibold text-zinc-300 uppercase">
-              {game.statusLabel}
+              {game.playStatusLabel}
             </span>
           )}
         </div>

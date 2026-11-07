@@ -61,8 +61,8 @@ Déploiement lancé depuis le PC de Zakkios en SSH (son IP est autorisée chez O
 ## Étape 5 — Partie jeux vidéo (IGDB)
 
 Prérequis — incohérences repérées dans le code existant :
-- [ ] `GameEntry.providerId` est un UUID (copié de `MangaEntry`) alors que les IDs IGDB sont des entiers → passer en `int` + migration
-- [ ] Statuts désalignés : back `to_play / playing / completed / dropped`, front `backlog / playing / completed / retired / abandoned` → choisir une liste unique et ajouter `label()` à `GameStatus` comme `MangaReadingStatus`
+- [x] `GameEntry.providerId` : UUID → entier IGDB (`INT UNSIGNED`), migration `Version20261107114907` qui refuse de tourner si `game_entry` contient déjà des lignes (conversion impossible sans perte)
+- [x] Statuts alignés sur le back, parallèles aux mangas : `to_play / playing / completed / dropped`, libellés « À jouer / En cours / Terminé / Abandonné » (`GameStatus::label()` et `frontend/src/features/game/gameStatus.ts`). Champs du futur DTO : `isInLibrary`, `playStatus`, `playStatusLabel` (comme `readingStatus` côté manga). Au passage : libellé manga « A lire » → « À lire »
 - [ ] `IgdbAuthService` redemande un jeton Twitch à chaque appel → le mettre en cache (Symfony Cache) selon `expires_in` (~60 jours)
 
 Backend (calqué sur la partie manga) :

@@ -8,4 +8,14 @@ enum GameStatus: string
     case playing = 'playing';
     case completed = 'completed';
     case dropped = 'dropped';
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::to_play => 'À jouer',
+            self::playing => 'En cours',
+            self::completed => 'Terminé',
+            self::dropped => 'Abandonné',
+        };
+    }
 }
