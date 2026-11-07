@@ -4,19 +4,19 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": ">=8.2",
+        "php": ">=8.4",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "doctrine/doctrine-bundle": "^3.2",
-        "doctrine/doctrine-migrations-bundle": "^3.7",
-        "doctrine/orm": "^3.6",
-        "gesdinet/jwt-refresh-token-bundle": "^2.0",
+        "doctrine/doctrine-bundle": "^3.3.4",
+        "doctrine/doctrine-migrations-bundle": "^3.7.1",
+        "doctrine/orm": "^3.7.6",
+        "gesdinet/jwt-refresh-token-bundle": "^2.3",
         "lexik/jwt-authentication-bundle": "^3.2",
-        "nelmio/cors-bundle": "^2.6",
-        "symfony/apache-pack": "*",
+        "nelmio/cors-bundle": "^2.6.1",
+        "symfony/apache-pack": ">=1.0.1",
         "symfony/console": "7.4.*",
         "symfony/dotenv": "7.4.*",
-        "symfony/flex": "^2",
+        "symfony/flex": "^2.12",
         "symfony/framework-bundle": "7.4.*",
         "symfony/http-client": "7.4.*",
         "symfony/runtime": "7.4.*",
@@ -31,7 +31,10 @@
             "symfony/runtime": true
         },
         "bump-after-update": true,
-        "sort-packages": true
+        "sort-packages": true,
+        "platform": {
+            "php": "8.4.0"
+        }
     },
     "autoload": {
         "psr-4": {
@@ -75,6 +78,6 @@
         }
     },
     "require-dev": {
-        "symfony/maker-bundle": "^1.67"
+        "symfony/maker-bundle": "^1.68"
     }
 }
