@@ -80,9 +80,17 @@ class GameEntryService
     /**
      * @return GameEntry[]
      */
-    public function findUserGameEntries(User $user, int $page): array
+    public function findUserGameEntries(User $user, int $page, ?GameStatus $status = null): array
     {
-        return $this->gameEntryRepository->findByOwnerPaginated($user, $page);
+        return $this->gameEntryRepository->findByOwnerPaginated($user, $page, $status);
+    }
+
+    /**
+     * @return int[] IGDB ids of every game in the user's library
+     */
+    public function findUserGameIds(User $user): array
+    {
+        return $this->gameEntryRepository->findProviderIdsByOwner($user);
     }
 
     private function resolveStatus(string $status): GameStatus

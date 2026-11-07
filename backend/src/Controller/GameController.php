@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Enum\GameStatus;
 use App\Service\Library\GameLibraryQueryService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -33,8 +34,9 @@ class GameController extends AbstractController
         );
     }
 
+    // Optional ?status=<GameStatus value> keeps only the games with that status.
     #[Route('/library/page/{page}', name: 'library', requirements: ['page' => '\d+'], methods: ['GET'])]
-    public function library(int $page): JsonResponse
+    public function library(int $page, Request $request): JsonResponse
     {
         $user = $this->getUser();
 
@@ -42,9 +44,29 @@ class GameController extends AbstractController
             return $this->json(['message' => 'User not authenticated'], 401);
         }
 
+        $statusValue = (string) $request->query->get('status', '');
+        $status = $statusValue === '' ? null : GameStatus::tryFrom($statusValue);
+
+        if ($statusValue !== '' && !$status) {
+            return $this->json(['message' => 'Invalid status'], 400);
+        }
+
         return $this->json(
-            $this->gameLibraryQueryService->getGameLibraryForUser($user, $page)
+            $this->gameLibraryQueryService->getGameLibraryForUser($user, $page, $status)
         );
+    }
+
+    // Games of the user's library with an announced release date still to come.
+    #[Route('/upcoming', name: 'upcoming', methods: ['GET'])]
+    public function upcoming(): JsonResponse
+    {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            return $this->json(['message' => 'User not authenticated'], 401);
+        }
+
+        return $this->json($this->gameLibraryQueryService->getUpcomingGamesForUser($user));
     }
 
     #[Route('/{id}', name: 'by_id', requirements: ['id' => '\d+'], methods: ['GET'])]

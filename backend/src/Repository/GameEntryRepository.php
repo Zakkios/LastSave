@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\GameEntry;
 use App\Entity\User;
+use App\Enum\GameStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\Persistence\ManagerRegistry;
@@ -47,18 +48,67 @@ class GameEntryRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return GameEntry[] most recently added first
+     * @return GameEntry[] most recently added first, optionally limited to one status
      */
-    public function findByOwnerPaginated(User $user, int $page = 0, int $limit = 20): array
-    {
+    public function findByOwnerPaginated(
+        User $user,
+        int $page = 0,
+        ?GameStatus $status = null,
+        int $limit = 20
+    ): array {
         $page = max(0, $page);
         $limit = max(1, $limit);
 
-        return $this->findBy(
-            ['owner' => $user],
-            ['id' => 'DESC'],
-            $limit,
-            $page * $limit
-        );
+        $criteria = ['owner' => $user];
+
+        if ($status) {
+            $criteria['status'] = $status;
+        }
+
+        return $this->findBy($criteria, ['id' => 'DESC'], $limit, $page * $limit);
+    }
+
+    /**
+     * @return array<string, int> number of entries per status value (statuses without entries are absent)
+     */
+    public function countByStatusForOwner(User $user): array
+    {
+        $rows = $this->createQueryBuilder('g')
+            ->select('g.status AS status, COUNT(g.id) AS total')
+            ->andWhere('g.owner = :owner')
+            ->setParameter('owner', $user)
+            ->groupBy('g.status')
+            ->getQuery()
+            ->getArrayResult();
+
+        $counts = [];
+
+        foreach ($rows as $row) {
+            $status = $row['status'] instanceof \BackedEnum ? $row['status']->value : (string) $row['status'];
+            $counts[$status] = (int) $row['total'];
+        }
+
+        return $counts;
+    }
+
+    /**
+     * @return GameEntry[] most recently added or modified first
+     */
+    public function findRecentlyUpdatedByOwner(User $user, int $limit): array
+    {
+        return $this->findBy(['owner' => $user], ['updatedAt' => 'DESC', 'id' => 'DESC'], max(1, $limit));
+    }
+
+    /**
+     * @return int[] IGDB ids of every game in the user's library
+     */
+    public function findProviderIdsByOwner(User $user): array
+    {
+        return array_map('intval', $this->createQueryBuilder('g')
+            ->select('g.providerId')
+            ->andWhere('g.owner = :owner')
+            ->setParameter('owner', $user)
+            ->getQuery()
+            ->getSingleColumnResult());
     }
 }

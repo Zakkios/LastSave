@@ -51,6 +51,7 @@ class MangaEntryService
         }
 
         $mangaEntry->setStatus($mangaReadingStatus);
+        $mangaEntry->setUpdatedAt(new \DateTimeImmutable());
 
         $this->entityManager->flush();
 
@@ -113,8 +114,11 @@ class MangaEntryService
         );
     }
 
-    public function findUserMangaEntries(User $user, int $page): array
+    /**
+     * @return MangaEntry[] most recently added first
+     */
+    public function findUserMangaEntries(User $user, int $page, ?MangaReadingStatus $status = null): array
     {
-        return $this->mangaEntryRepository->findByOwnerPaginated($user, $page);
+        return $this->mangaEntryRepository->findByOwnerPaginated($user, $page, $status);
     }
 }

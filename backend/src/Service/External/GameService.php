@@ -22,9 +22,10 @@ class GameService
     // seasons, ports, forks, packs and updates.
     private const GAME_TYPES = '(0,2,4,8,9,10)';
 
-    private const SHORT_FIELDS = 'name, cover.image_id, total_rating, platforms.name, '
+    private const SHORT_FIELDS = 'name, cover.image_id, total_rating, first_release_date, platforms.name, '
         . 'platforms.abbreviation, involved_companies.company.name, involved_companies.developer';
-    private const COMPLETE_FIELDS = self::SHORT_FIELDS . ', summary, first_release_date, genres.name, themes.name';
+    private const COMPLETE_FIELDS = self::SHORT_FIELDS . ', summary, genres.name, themes.name';
+    private const UPCOMING_LIMIT = 5;
 
     public function __construct(
         private readonly ApiClient $apiClient,
@@ -94,6 +95,33 @@ class GameService
         }
 
         return $dtos;
+    }
+
+    /**
+     * Games among $ids whose first release date is still to come, soonest first.
+     * Games without an announced date are left out (IGDB has no date to compare).
+     *
+     * @param int[] $ids
+     *
+     * @return GameShortDTO[]
+     */
+    public function getUpcomingGames(array $ids): array
+    {
+        $ids = array_values(array_unique(array_map('intval', $ids)));
+
+        if ($ids === []) {
+            return [];
+        }
+
+        $games = $this->requestIgdb('/games', sprintf(
+            'fields %s; where id = (%s) & first_release_date > %d; sort first_release_date asc; limit %d;',
+            self::SHORT_FIELDS,
+            implode(',', $ids),
+            time(),
+            self::UPCOMING_LIMIT
+        ));
+
+        return array_map(fn (array $game) => $this->gameMapper->toShortDTO($game), $games);
     }
 
     /**

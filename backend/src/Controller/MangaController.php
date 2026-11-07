@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Enum\MangaReadingStatus;
 use App\Service\Library\MangaLibraryQueryService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -39,8 +40,9 @@ class MangaController extends AbstractController
         return $this->json($mangaData);
     }
 
+    // Optional ?status=<MangaReadingStatus value> keeps only the mangas with that status.
     #[Route('/library/page/{page}', name: 'app_manga_library', methods: ['GET'])]
-    public function mangaLibrary(int $page): JsonResponse
+    public function mangaLibrary(int $page, Request $request): JsonResponse
     {
         $user = $this->getUser();
 
@@ -56,7 +58,16 @@ class MangaController extends AbstractController
             ], 400);
         }
 
-        $mangasData = $this->mangaLibraryQueryService->getMangaLibraryForUser($user, $page);
+        $statusValue = (string) $request->query->get('status', '');
+        $status = $statusValue === '' ? null : MangaReadingStatus::tryFrom($statusValue);
+
+        if ($statusValue !== '' && !$status) {
+            return $this->json([
+                'message' => 'Invalid status',
+            ], 400);
+        }
+
+        $mangasData = $this->mangaLibraryQueryService->getMangaLibraryForUser($user, $page, $status);
 
         return $this->json($mangasData);
     }

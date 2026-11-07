@@ -16,6 +16,8 @@ class GameCompleteDTO implements UserGameEntryAwareDTO
         public ?string $coverUrl,
         public ?int $rating,
         public array $platforms,
+        // First release date (Y-m-d, UTC), null when IGDB has none.
+        public ?string $releaseDate,
         public ?string $summary,
         public ?string $releaseYear,
         public array $genres,

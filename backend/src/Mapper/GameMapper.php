@@ -22,6 +22,7 @@ class GameMapper
             coverUrl: $this->resolveCoverUrl($game),
             rating: $this->resolveRating($game),
             platforms: $this->resolvePlatforms($game),
+            releaseDate: $this->resolveReleaseDate($game),
         );
     }
 
@@ -34,6 +35,7 @@ class GameMapper
             coverUrl: $this->resolveCoverUrl($game),
             rating: $this->resolveRating($game),
             platforms: $this->resolvePlatforms($game),
+            releaseDate: $this->resolveReleaseDate($game),
             summary: isset($game['summary']) ? trim((string) $game['summary']) : null,
             releaseYear: isset($game['first_release_date'])
                 ? gmdate('Y', (int) $game['first_release_date'])
@@ -41,6 +43,14 @@ class GameMapper
             genres: $this->resolveNames($game['genres'] ?? []),
             themes: $this->resolveNames($game['themes'] ?? []),
         );
+    }
+
+    // IGDB gives a Unix timestamp (UTC).
+    private function resolveReleaseDate(array $game): ?string
+    {
+        return isset($game['first_release_date'])
+            ? gmdate('Y-m-d', (int) $game['first_release_date'])
+            : null;
     }
 
     private function resolveDeveloper(array $game): ?string

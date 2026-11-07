@@ -14,6 +14,8 @@ class GameShortDTO implements UserGameEntryAwareDTO
         public ?string $coverUrl,
         public ?int $rating,
         public array $platforms,
+        // First release date (Y-m-d, UTC), null when IGDB has none.
+        public ?string $releaseDate,
         public bool $isInLibrary = false,
         public ?string $playStatus = null,
         public ?string $playStatusLabel = null,

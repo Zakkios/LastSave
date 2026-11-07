@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\MangaEntry;
 use App\Entity\User;
+use App\Enum\MangaReadingStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\Persistence\ManagerRegistry;
@@ -49,46 +50,55 @@ class MangaEntryRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return MangaEntry[] most recently added first, optionally limited to one status
+     */
     public function findByOwnerPaginated(
         User $user,
         int $page = 0,
+        ?MangaReadingStatus $status = null,
         int $limit = 20
     ): array {
         $page = max(0, $page);
         $limit = max(1, $limit);
 
-        $offset = $page * $limit;
+        $criteria = ['owner' => $user];
 
-        return $this->findBy(
-            ['owner' => $user],
-            ['id' => 'DESC'],
-            $limit,
-            $offset
-        );
+        if ($status) {
+            $criteria['status'] = $status;
+        }
+
+        return $this->findBy($criteria, ['id' => 'DESC'], $limit, $page * $limit);
     }
 
-    //    /**
-    //     * @return MangaEntry[] Returns an array of MangaEntry objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('m')
-    //            ->andWhere('m.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('m.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * @return array<string, int> number of entries per status value (statuses without entries are absent)
+     */
+    public function countByStatusForOwner(User $user): array
+    {
+        $rows = $this->createQueryBuilder('m')
+            ->select('m.status AS status, COUNT(m.id) AS total')
+            ->andWhere('m.owner = :owner')
+            ->setParameter('owner', $user)
+            ->groupBy('m.status')
+            ->getQuery()
+            ->getArrayResult();
 
-    //    public function findOneBySomeField($value): ?MangaEntry
-    //    {
-    //        return $this->createQueryBuilder('m')
-    //            ->andWhere('m.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        $counts = [];
+
+        foreach ($rows as $row) {
+            $status = $row['status'] instanceof \BackedEnum ? $row['status']->value : (string) $row['status'];
+            $counts[$status] = (int) $row['total'];
+        }
+
+        return $counts;
+    }
+
+    /**
+     * @return MangaEntry[] most recently added or modified first
+     */
+    public function findRecentlyUpdatedByOwner(User $user, int $limit): array
+    {
+        return $this->findBy(['owner' => $user], ['updatedAt' => 'DESC', 'id' => 'DESC'], max(1, $limit));
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Service\Library;
 
 use App\DTO\MangaCompleteDTO;
 use App\Entity\User;
+use App\Enum\MangaReadingStatus;
 use App\Service\External\MangaDexService;
 use Symfony\Component\Uid\Uuid;
 
@@ -46,9 +47,12 @@ class MangaLibraryQueryService
         return $this->enrichMangaCollectionForUser($mangas, $user);
     }
 
-    public function getMangaLibraryForUser(User $user, int $page): array
+    /**
+     * @return MangaCompleteDTO[] most recently added first
+     */
+    public function getMangaLibraryForUser(User $user, int $page, ?MangaReadingStatus $status = null): array
     {
-        $mangaEntries = $this->mangaEntryService->findUserMangaEntries($user, $page);
+        $mangaEntries = $this->mangaEntryService->findUserMangaEntries($user, $page, $status);
 
         $providerIds = [];
 
