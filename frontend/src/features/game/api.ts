@@ -77,7 +77,18 @@ const updateGameEntry = async (payload: GameEntryPayload): Promise<void> => {
   }
 };
 
+// Retire le jeu de la bibliothèque (ajouté par erreur).
+const deleteGameEntry = async (providerId: number): Promise<void> => {
+  try {
+    await http.delete(`/game_entries/${providerId}`);
+  } catch (error) {
+    console.error("Error calling game API:", error);
+    throw error;
+  }
+};
+
 export {
+  deleteGameEntry,
   getAutocompleteGames,
   getGameById,
   getGameLibrary,

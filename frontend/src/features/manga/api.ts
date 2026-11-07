@@ -66,6 +66,16 @@ const updateMangaEntry = async (payload: MangaEntryPayload): Promise<void> => {
 };
 
 // `status` : ne garder que les mangas de ce statut (filtré par le back).
+// Retire le manga de la bibliothèque (ajouté par erreur).
+const deleteMangaEntry = async (providerId: string): Promise<void> => {
+  try {
+    await http.delete(`/manga_entries/${providerId}`);
+  } catch (error) {
+    console.error("Error calling manga API:", error);
+    throw error;
+  }
+};
+
 const getMangaLibrary = async (
   page: number,
   status: MangaReadingStatus | null = null,
@@ -88,5 +98,6 @@ export {
   getMangaByPage,
   createMangaEntry,
   updateMangaEntry,
+  deleteMangaEntry,
   getMangaLibrary,
 };

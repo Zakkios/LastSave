@@ -6,7 +6,8 @@ import type {
   GameStatus,
 } from "../types";
 import Button from "../../../shared/components/Button/Button";
-import { createGameEntry, updateGameEntry } from "../api";
+import { createGameEntry, deleteGameEntry, updateGameEntry } from "../api";
+import { Trash2 } from "lucide-react";
 import FlashMessage from "../../../shared/components/FlashMessage/FlashMessage";
 import FullPageLoading from "../../../shared/components/FullPageLoading";
 import {
@@ -38,6 +39,7 @@ const GameEntryModalContent = ({
   );
   const [flashMessage, setFlashMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isConfirmingRemoval, setIsConfirmingRemoval] = useState(false);
 
   const handleStatusChange = (value: string) => {
     if (isGameStatus(value)) {
@@ -78,6 +80,27 @@ const GameEntryModalContent = ({
           ? "Impossible de mettre à jour ce jeu."
           : "Impossible d'ajouter ce jeu à ta liste.",
       );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRemove = async () => {
+    setLoading(true);
+
+    try {
+      await deleteGameEntry(game.id);
+
+      onSaved({
+        isInLibrary: false,
+        playStatus: null,
+        playStatusLabel: null,
+      });
+
+      onClose();
+    } catch {
+      setIsConfirmingRemoval(false);
+      setFlashMessage("Impossible de retirer ce jeu de ta liste.");
     } finally {
       setLoading(false);
     }
@@ -171,20 +194,59 @@ const GameEntryModalContent = ({
               </div>
             )}
           </div>
-          <div className="flex justify-end gap-3">
-            <Button variant="ghost" size="sm" onClick={onClose}>
-              Annuler
-            </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleSubmit}
-              disabled={!selectedStatus || loading}
-              className="py-2.5"
-            >
-              {isInLibrary ? "Modifier" : "Ajouter"}
-            </Button>
-          </div>
+          {isConfirmingRemoval ? (
+            // Confirmation avant de retirer : l'entrée et son statut seront perdus.
+            <div className="space-y-4 rounded-lg border border-rose-900/50 bg-rose-950/20 p-4">
+              <p className="text-sm text-zinc-200">
+                Retirer « {game.title} » de ta liste ? Son statut sera perdu.
+              </p>
+              <div className="flex justify-end gap-3">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsConfirmingRemoval(false)}
+                >
+                  Annuler
+                </Button>
+                <Button
+                  variant="danger"
+                  size="sm"
+                  onClick={handleRemove}
+                  disabled={loading}
+                >
+                  Retirer
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+              {isInLibrary ? (
+                <Button
+                  variant="danger-ghost"
+                  size="sm"
+                  onClick={() => setIsConfirmingRemoval(true)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Retirer de ma liste
+                </Button>
+              ) : (
+                <span />
+              )}
+              <div className="flex justify-end gap-3">
+                <Button variant="ghost" size="sm" onClick={onClose}>
+                  Annuler
+                </Button>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleSubmit}
+                  disabled={!selectedStatus || loading}
+                >
+                  {isInLibrary ? "Modifier" : "Ajouter"}
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>
