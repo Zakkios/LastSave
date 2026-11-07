@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\GameEntry;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -16,28 +18,47 @@ class GameEntryRepository extends ServiceEntityRepository
         parent::__construct($registry, GameEntry::class);
     }
 
-    //    /**
-    //     * @return GameEntry[] Returns an array of GameEntry objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('g')
-    //            ->andWhere('g.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('g.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findOneByOwnerAndProviderId(User $user, int $providerId): ?GameEntry
+    {
+        return $this->findOneBy([
+            'owner' => $user,
+            'providerId' => $providerId,
+        ]);
+    }
 
-    //    public function findOneBySomeField($value): ?GameEntry
-    //    {
-    //        return $this->createQueryBuilder('g')
-    //            ->andWhere('g.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     * @param int[] $providerIds
+     *
+     * @return GameEntry[]
+     */
+    public function findByOwnerAndProviderIds(User $user, array $providerIds): array
+    {
+        if ($providerIds === []) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('g')
+            ->andWhere('g.owner = :owner')
+            ->andWhere('g.providerId IN (:providerIds)')
+            ->setParameter('owner', $user)
+            ->setParameter('providerIds', $providerIds, ArrayParameterType::INTEGER)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return GameEntry[] most recently added first
+     */
+    public function findByOwnerPaginated(User $user, int $page = 0, int $limit = 20): array
+    {
+        $page = max(0, $page);
+        $limit = max(1, $limit);
+
+        return $this->findBy(
+            ['owner' => $user],
+            ['id' => 'DESC'],
+            $limit,
+            $page * $limit
+        );
+    }
 }
