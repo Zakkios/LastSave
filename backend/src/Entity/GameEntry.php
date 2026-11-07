@@ -5,7 +5,6 @@ namespace App\Entity;
 use App\Enum\GameStatus;
 use App\Repository\GameEntryRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: GameEntryRepository::class)]
 #[ORM\UniqueConstraint(name: 'uniq_owner_provider_game', columns: ['provider_id', 'owner_id'])]
@@ -22,8 +21,9 @@ class GameEntry
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'uuid', nullable: false)]
-    private ?Uuid $providerId = null;
+    // IGDB game id (IGDB identifies games with positive integers).
+    #[ORM\Column(nullable: false, options: ['unsigned' => true])]
+    private ?int $providerId = null;
 
     #[ORM\Column(enumType: GameStatus::class)]
     private ?GameStatus $status = null;
@@ -43,12 +43,12 @@ class GameEntry
         return $this->id;
     }
 
-    public function getProviderId(): ?Uuid
+    public function getProviderId(): ?int
     {
         return $this->providerId;
     }
 
-    public function setProviderId(Uuid $providerId): static
+    public function setProviderId(int $providerId): static
     {
         $this->providerId = $providerId;
 
