@@ -63,7 +63,7 @@ Déploiement lancé depuis le PC de Zakkios en SSH (son IP est autorisée chez O
 Prérequis — incohérences repérées dans le code existant :
 - [x] `GameEntry.providerId` : UUID → entier IGDB (`INT UNSIGNED`), migration `Version20261107114907` qui refuse de tourner si `game_entry` contient déjà des lignes (conversion impossible sans perte)
 - [x] Statuts alignés sur le back, parallèles aux mangas : `to_play / playing / completed / dropped`, libellés « À jouer / En cours / Terminé / Abandonné » (`GameStatus::label()` et `frontend/src/features/game/gameStatus.ts`). Champs du futur DTO : `isInLibrary`, `playStatus`, `playStatusLabel` (comme `readingStatus` côté manga). Au passage : libellé manga « A lire » → « À lire »
-- [ ] `IgdbAuthService` redemande un jeton Twitch à chaque appel → le mettre en cache (Symfony Cache) selon `expires_in` (~60 jours)
+- [x] Jeton Twitch gardé dans `cache.app` jusqu'à une heure avant son expiration (`expires_in`, ~65 jours) au lieu d'être redemandé à chaque requête ; si IGDB répond 401 (jeton révoqué), `GameService::requestIgdb()` oublie le jeton, en redemande un et réessaie une fois. À réutiliser pour les futurs appels IGDB. Note : un mauvais Client ID donne aussi un 401 (un essai de plus, puis l'erreur remonte)
 
 Backend (calqué sur la partie manga) :
 - [ ] `GameShortDTO`, `GameCompleteDTO`, `GameMapper`
