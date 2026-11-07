@@ -103,6 +103,53 @@
     margin: 0;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
+
+  /* Listes déroulantes (<select>) aux couleurs du menu latéral.
+     Chrome, Edge et Safari 27+ laissent tout styliser (appearance: base-select) ;
+     ailleurs (Firefox), la liste reste celle du navigateur, en sombre. */
+  select option {
+    @apply bg-zinc-950 text-zinc-200;
+  }
+
+  @supports (appearance: base-select) {
+    select,
+    ::picker(select) {
+      appearance: base-select;
+    }
+
+    select::picker-icon {
+      @apply text-zinc-500 transition-transform;
+    }
+
+    select:open::picker-icon {
+      rotate: 180deg;
+    }
+
+    ::picker(select) {
+      @apply my-1 rounded-lg border border-zinc-800 bg-zinc-950 p-1 shadow-xl shadow-black/40;
+    }
+
+    select option {
+      @apply cursor-pointer rounded-md bg-transparent px-3 py-2 text-sm text-zinc-400 transition-colors;
+    }
+
+    select option:not(:disabled):hover,
+    select option:not(:disabled):focus-visible {
+      @apply bg-zinc-900 text-zinc-50 outline-none;
+    }
+
+    select option:checked {
+      @apply bg-zinc-800 text-zinc-50;
+    }
+
+    select option::checkmark {
+      @apply text-indigo-500;
+    }
+
+    select option:disabled {
+      @apply cursor-default text-zinc-600;
+    }
+  }
 }
 
 @layer utilities {
