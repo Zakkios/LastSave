@@ -11,39 +11,29 @@ import {
 } from "lucide-react";
 import Button from "../../../shared/components/Button/Button";
 import StatusBadge from "./StatusBadge/StatusBadge";
-import type { MangaCompleteResponse, MangaLibraryStatus } from "../types";
+import type { MangaCompleteResponse, MangaEntrySnapshot } from "../types";
 import MangaEntryModal from "./MangaEntryModal";
+import MangaReadingPanel from "./MangaReadingPanel";
+import { useMangaEntryUpdates } from "../hooks/useMangaEntryUpdates";
+import { toEntrySnapshot } from "../mangaProgress";
 import { Card, CardContent } from "../../../shared/components/Card/Card";
 
 interface MangaCardProps {
   manga: MangaCompleteResponse;
 }
 
-export const MangaCard = ({ manga }: MangaCardProps) => {
+export const MangaCard = ({ manga: loadedManga }: MangaCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const [localLibraryStatus, setLocalLibraryStatus] = useState<{
-    mangaId: string;
-    status: MangaLibraryStatus;
-  } | null>(null);
-
-  const libraryStatus =
-    localLibraryStatus?.mangaId === manga.id
-      ? localLibraryStatus.status
-      : {
-          isInLibrary: manga.isInLibrary,
-          readingStatus: manga.readingStatus,
-          readingStatusLabel: manga.readingStatusLabel,
-        };
+  const entryUpdates = useMangaEntryUpdates();
+  // Le manga avec les changements faits sur la page (fenêtre, +1, propositions de statut).
+  const manga = entryUpdates.withUpdates(loadedManga);
+  const libraryStatus = toEntrySnapshot(manga);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const handleSaved = (status: MangaLibraryStatus) => {
-    setLocalLibraryStatus({
-      mangaId: manga.id,
-      status,
-    });
+  const handleSaved = (entry: MangaEntrySnapshot) => {
+    entryUpdates.setEntry(manga.id, entry);
   };
 
   return (
@@ -52,8 +42,7 @@ export const MangaCard = ({ manga }: MangaCardProps) => {
         isOpen={isModalOpen}
         onClose={closeModal}
         manga={manga}
-        status={libraryStatus.readingStatus}
-        isInLibrary={libraryStatus.isInLibrary}
+        entry={libraryStatus}
         onSaved={handleSaved}
       />
 
@@ -86,7 +75,7 @@ export const MangaCard = ({ manga }: MangaCardProps) => {
                 {libraryStatus.isInLibrary ? (
                   <>
                     <Pencil className="h-4 w-4" />
-                    Modifier mon statut
+                    Gérer ma lecture
                   </>
                 ) : (
                   <>
@@ -109,6 +98,18 @@ export const MangaCard = ({ manga }: MangaCardProps) => {
                   </div>
                 )}
             </div>
+
+            {libraryStatus.isInLibrary && (
+              <MangaReadingPanel
+                manga={manga}
+                onAdvance={() => void entryUpdates.advance(manga)}
+                isAdvancing={entryUpdates.pendingMangaId === manga.id}
+                showUndo={entryUpdates.undoMangaId === manga.id}
+                onUndo={() => void entryUpdates.undo()}
+                onChangeStatus={(status) => void entryUpdates.changeStatus(manga, status)}
+                error={entryUpdates.error}
+              />
+            )}
 
             <Card>
               <CardContent className="space-y-4 p-4">

@@ -13,7 +13,7 @@ export type ButtonVariant =
   | "ghost"
   | "danger"
   | "danger-ghost";
-export type ButtonSize = "sm" | "md" | "lg";
+export type ButtonSize = "xs" | "sm" | "md" | "lg";
 
 export type ButtonProps = {
   children: ReactNode;

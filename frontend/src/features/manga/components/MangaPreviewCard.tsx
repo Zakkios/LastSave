@@ -1,11 +1,15 @@
 import StatusBadge from "./StatusBadge/StatusBadge";
 import type { MangaShortResponse } from "../types";
+import { formatProgress } from "../mangaProgress";
 
 interface MangaPreviewCardProps {
   manga: MangaShortResponse;
 }
 
 export const MangaPreviewCard = ({ manga }: MangaPreviewCardProps) => {
+  // Progression en lecture seule (« Chap. 1194 », « Tome 12 ») : le +1 est sur l'accueil et la fiche.
+  const progressLabel = formatProgress(manga);
+
   return (
     <article className="w-full p-3 border border-zinc-800 rounded-lg bg-zinc-900/50 hover:bg-zinc-900 transition-colors">
       <div className="flex justify-between">
@@ -33,6 +37,12 @@ export const MangaPreviewCard = ({ manga }: MangaPreviewCardProps) => {
             <p className="text-zinc-400 text-sm truncate">
               {manga.author || "Auteur inconnu"}
             </p>
+
+            {progressLabel && (
+              <p className="mt-1 text-xs text-zinc-500 tabular-nums">
+                {progressLabel}
+              </p>
+            )}
           </div>
         </div>
         <div>
