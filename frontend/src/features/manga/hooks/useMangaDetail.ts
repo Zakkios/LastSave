@@ -1,43 +1,59 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getMangaById } from "../api";
 import type { MangaCompleteResponse } from "../types";
 
-export const useMangaDetail = (mangaId: string | undefined) => {
-  const [manga, setManga] = useState<MangaCompleteResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+type MangaDetailResult = {
+  mangaId: string;
+  manga: MangaCompleteResponse | null;
+  error: string | null;
+};
 
-  const fetchManga = useCallback(async () => {
+export const useMangaDetail = (mangaId: string | undefined) => {
+  // Dernier résultat reçu, associé à l'id demandé : tant qu'il ne correspond
+  // pas à `mangaId`, le chargement est en cours (pas de setState synchrone).
+  const [result, setResult] = useState<MangaDetailResult | null>(null);
+
+  useEffect(() => {
     if (!mangaId) {
-      setManga(null);
-      setError("Manga introuvable.");
-      setLoading(false);
       return;
     }
 
-    setLoading(true);
-    setError(null);
+    // Ignore la réponse d'un manga précédent arrivée après coup.
+    let ignore = false;
 
-    try {
-      const mangaData = await getMangaById(mangaId);
-      setManga(mangaData);
-    } catch (error) {
-      console.error("Impossible de charger le manga :", error);
-      setManga(null);
-      setError("Impossible de charger ce manga.");
-    } finally {
-      setLoading(false);
-    }
+    getMangaById(mangaId)
+      .then((manga) => {
+        if (!ignore) {
+          setResult({ mangaId, manga, error: null });
+        }
+      })
+      .catch((error: unknown) => {
+        if (ignore) {
+          return;
+        }
+
+        console.error("Impossible de charger le manga :", error);
+        setResult({
+          mangaId,
+          manga: null,
+          error: "Impossible de charger ce manga.",
+        });
+      });
+
+    return () => {
+      ignore = true;
+    };
   }, [mangaId]);
 
-  useEffect(() => {
-    void fetchManga();
-  }, [fetchManga]);
+  if (!mangaId) {
+    return { manga: null, loading: false, error: "Manga introuvable." };
+  }
+
+  const current = result?.mangaId === mangaId ? result : null;
 
   return {
-    manga,
-    loading,
-    error,
-    refetch: fetchManga,
+    manga: current?.manga ?? null,
+    loading: current === null,
+    error: current?.error ?? null,
   };
 };

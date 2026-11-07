@@ -4,6 +4,8 @@ import type { MangaShortResponse } from "../types";
 import { useDebounce } from "../../../shared/hooks/useDebounce";
 import { MANGA_SEARCH_LIMIT } from "../constants";
 
+const NO_RESULTS: MangaShortResponse[] = [];
+
 export const useMangaSearch = () => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<MangaShortResponse[]>([]);
@@ -12,6 +14,7 @@ export const useMangaSearch = () => {
   const [error, setError] = useState<string | null>(null);
 
   const debouncedQuery = useDebounce(query, 200);
+  const isQueryTooShort = debouncedQuery.trim().length < 2;
 
   const pageRef = useRef(0);
   const isFetchingRef = useRef(false);
@@ -25,10 +28,9 @@ export const useMangaSearch = () => {
     requestIdRef.current = requestId;
     currentQueryRef.current = cleanQuery;
 
+    // Requête trop courte : rien à charger. Les résultats sont masqués au rendu
+    // (voir le return) plutôt que vidés ici par un setState dans l'effet.
     if (cleanQuery.length < 2) {
-      setResults([]);
-      setHasMore(false);
-      setIsSearching(false);
       pageRef.current = 0;
       isFetchingRef.current = false;
       return;
@@ -111,9 +113,9 @@ export const useMangaSearch = () => {
   return {
     query,
     setQuery,
-    results,
-    hasMore,
-    isSearching,
+    results: isQueryTooShort ? NO_RESULTS : results,
+    hasMore: !isQueryTooShort && hasMore,
+    isSearching: !isQueryTooShort && isSearching,
     error,
     fetchMore,
   };

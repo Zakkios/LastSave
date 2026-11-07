@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Dropdown from "../../../shared/components/Dropdown/Dropdown";
 import type { MangaCompleteResponse, MangaLibraryStatus } from "../types";
 import Button from "../../../shared/components/Button/Button";
@@ -21,32 +21,20 @@ type MangaEntryModalProps = {
   onSaved: (status: MangaLibraryStatus) => void;
 };
 
-const MangaEntryModal = ({
-  isOpen,
+type MangaEntryModalContentProps = Omit<MangaEntryModalProps, "isOpen">;
+
+const MangaEntryModalContent = ({
   onClose,
   manga,
   status,
   isInLibrary,
   onSaved,
-}: MangaEntryModalProps) => {
+}: MangaEntryModalContentProps) => {
   const [selectedStatus, setSelectedStatus] = useState<StatusVariant | "">(
     status ?? "",
   );
   const [flashMessage, setFlashMessage] = useState("");
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    setSelectedStatus(status ?? "");
-    setFlashMessage("");
-  }, [isOpen, status]);
-
-  if (!isOpen) {
-    return null;
-  }
 
   const handleStatusChange = (value: string) => {
     if (isMangaReadingStatus(value)) {
@@ -201,6 +189,16 @@ const MangaEntryModal = ({
       </div>
     </>
   );
+};
+
+// Le contenu n'est monté que modale ouverte : son état (statut choisi, message)
+// repart donc des props à chaque ouverture, sans useEffect de réinitialisation.
+const MangaEntryModal = ({ isOpen, ...props }: MangaEntryModalProps) => {
+  if (!isOpen) {
+    return null;
+  }
+
+  return <MangaEntryModalContent key={props.status ?? ""} {...props} />;
 };
 
 export default MangaEntryModal;
