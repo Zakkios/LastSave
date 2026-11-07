@@ -11,6 +11,7 @@ import PageHeader from "../shared/components/PageHeader";
 import ButtonLink from "../shared/components/Button/ButtonLink";
 import DashboardSection from "../features/dashboard/components/DashboardSection";
 import InProgressShelf from "../features/dashboard/components/InProgressShelf";
+import ReadingMangaShelf from "../features/dashboard/components/ReadingMangaShelf";
 import CollectionOverviewCard, {
   CollectionOverviewSkeleton,
   type StatusSegment,
@@ -19,7 +20,6 @@ import RecentActivityList from "../features/dashboard/components/RecentActivityL
 import UpcomingGamesList from "../features/dashboard/components/UpcomingGamesList";
 import { useLibraryStats } from "../features/library/hooks/useLibraryStats";
 import { useRecentEntries } from "../features/library/hooks/useRecentEntries";
-import { useMangaLibrary } from "../features/manga/hooks/useMangaLibrary";
 import { useGameLibrary } from "../features/game/hooks/useGameLibrary";
 import { useUpcomingGames } from "../features/game/hooks/useUpcomingGames";
 import { mangaReadingStatusLabels } from "../features/manga/mangaReadingStatus";
@@ -41,7 +41,6 @@ const toSegments = <Status extends StatusSegment["status"]>(
 // voir sa collection d'un coup d'œil, puis l'activité et les sorties à venir.
 const DashboardPage = () => {
   const stats = useLibraryStats();
-  const readingMangas = useMangaLibrary("reading");
   const playingGames = useGameLibrary("playing");
   const recentEntries = useRecentEntries();
   const upcomingGames = useUpcomingGames();
@@ -70,22 +69,8 @@ const DashboardPage = () => {
         icon={<PlayCircle className="h-5 w-5 text-indigo-500" />}
       >
         <div className="space-y-6">
-          <InProgressShelf
-            title="Mangas"
-            icon={<Library className="h-4 w-4" />}
-            count={stats.data?.mangas.byStatus.reading ?? null}
-            items={readingMangas.items.map((manga) => ({
-              key: manga.id,
-              title: manga.title,
-              coverUrl: manga.coverUrl || null,
-              href: `/manga/${manga.id}`,
-            }))}
-            loading={readingMangas.loading}
-            error={readingMangas.error}
-            seeAllHref="/mangas?status=reading"
-            emptyMessage="Aucun manga en cours de lecture."
-            emptyAction={{ label: "Trouver un manga", href: "/search?tab=mangas" }}
-            placeholderIcon={<Library className="h-8 w-8" />}
+          <ReadingMangaShelf
+            readingCount={stats.data?.mangas.byStatus.reading ?? null}
           />
           <InProgressShelf
             title="Jeux"

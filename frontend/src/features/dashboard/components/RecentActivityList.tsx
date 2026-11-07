@@ -76,7 +76,7 @@ const RecentActivityList = ({ entries, loading, error }: RecentActivityListProps
               </p>
               <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-500">
                 <TypeIcon className="h-3.5 w-3.5" aria-hidden="true" />
-                <span>{entry.action === "added" ? "Ajouté" : "Statut modifié"}</span>
+                <span>{entry.action === "added" ? "Ajouté" : "Mis à jour"}</span>
                 {entry.type === "manga" ? (
                   <StatusBadge status={entry.status} label={entry.statusLabel} />
                 ) : (
